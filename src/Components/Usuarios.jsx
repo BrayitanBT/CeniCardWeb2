@@ -272,28 +272,28 @@ function Usuarios() {
                       </span>
                     </td>
                     <td>
-                      <button 
-                        className="Btn_Accion"
-                        onClick={() => abrirModalEditar(usuario)}
-                      >
-                        Editar
-                      </button>
-                      <button 
-                        className="Btn_Accion estado"
-                        onClick={() => abrirModalEstado(usuario)}
-                        style={{ marginLeft: '8px' }}
-                      >
-                        Estado
-                      </button>
-                      {usuario.rol !== 'admin' && (
+                      <div className="Acciones_Grupo">
                         <button 
-                          className="Btn_Accion delete"
-                          onClick={() => handleEliminarUsuario(usuario)}
-                          style={{ marginLeft: '8px', backgroundColor: '#dc3545' }}
+                          className="Btn_Accion"
+                          onClick={() => abrirModalEditar(usuario)}
                         >
-                          Eliminar
+                          Editar
                         </button>
-                      )}
+                        <button 
+                          className="Btn_Accion estado"
+                          onClick={() => abrirModalEstado(usuario)}
+                        >
+                          Estado
+                        </button>
+                        {usuario.rol !== 'admin' && (
+                          <button 
+                            className="Btn_Accion delete"
+                            onClick={() => handleEliminarUsuario(usuario)}
+                          >
+                            Eliminar
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))

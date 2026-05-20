@@ -36,14 +36,14 @@
 
   /* Tipografía */
   --font-family: 'Calibri', 'Segoe UI', system-ui, -apple-system, sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.8125rem;
-  --font-size-base: 0.9375rem;
-  --font-size-lg: 1.0625rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
+  --font-size-xs: 0.85rem;
+  --font-size-sm: 0.925rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.35rem;
+  --font-size-2xl: 1.65rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
   --font-weight-normal: 400;
   --font-weight-medium: 500;
   --font-weight-semibold: 600;

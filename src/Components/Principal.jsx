@@ -103,7 +103,7 @@ function Principal() {
       <div className="Zona_De_Trabajo">
         <div className="Banner_Bienvenida">
           <div className="Texto_Banner">
-            <h1>¡Bienvenido, {nombreUsuario}!</h1>
+            <h1>¡Bienvenido/a, {nombreUsuario}!</h1>
             <p>Desde este aplicativo puedes:</p>
             <p className="Subtexto">Admitir usuarios, aprobar y liberar Carnés, publicar contenido y administrar material de préstamo junto a sus solicitudes.</p>
           </div>

@@ -1,13 +1,19 @@
+.Zona_De_Trabajo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
 .Banner_Bienvenida {
   background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-primary) 100%);
   border-radius: var(--radius-xl);
-  padding: var(--space-8) var(--space-10);
+  padding: var(--space-10) var(--space-12);
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  min-height: 160px;
+  min-height: 200px;
   overflow: hidden;
   box-shadow: var(--shadow-md);
 }
@@ -20,27 +26,28 @@
 }
 
 .Texto_Banner p {
-  margin: var(--space-2) 0 0 0;
+  margin: var(--space-3) 0 0 0;
   font-size: var(--font-size-base);
 }
 
 .Subtexto {
   font-size: var(--font-size-sm);
-  max-width: 480px;
+  max-width: 520px;
   color: rgba(255, 255, 255, 0.95);
-  line-height: var(--line-height);
+  line-height: 1.7;
   font-weight: var(--font-weight-medium);
+  margin-top: var(--space-4) !important;
 }
 
 .Texto_Banner p {
-  margin: var(--space-2) 0 0 0;
+  margin: var(--space-3) 0 0 0;
   font-size: var(--font-size-base);
   color: rgba(255, 255, 255, 0.95);
   font-weight: var(--font-weight-medium);
 }
 
 .Imagen_Banner {
-  width: 160px;
+  width: 180px;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
@@ -55,21 +62,22 @@
 
 .Seccion_Cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--space-5);
-  margin-bottom: var(--space-6);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-6);
+  margin-bottom: var(--space-2);
 }
 
 .Card_Estadistica {
   background: var(--color-surface);
-  padding: var(--space-6);
+  padding: var(--space-8) var(--space-10);
   border-radius: var(--radius-lg);
   display: flex;
   align-items: center;
-  gap: var(--space-5);
+  gap: var(--space-8);
   border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
+  min-height: 120px;
 }
 
 .Card_Estadistica:hover {
@@ -78,15 +86,15 @@
 }
 
 .Icono_Circulo {
-  width: 60px;
-  height: 60px;
+  width: 72px;
+  height: 72px;
   border-radius: var(--radius-lg);
   background: var(--color-primary-50);
   color: var(--color-primary);
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   flex-shrink: 0;
   transition: all var(--transition-fast);
 }
@@ -110,27 +118,29 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-1);
+  margin-bottom: var(--space-3);
+  display: block;
 }
 
 .Info_Card strong {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   color: var(--color-primary);
   font-weight: var(--font-weight-bold);
   line-height: 1;
+  display: block;
 }
 
 .Contenedor_Grafico {
   background: var(--color-surface);
   border-radius: var(--radius-xl);
-  padding: var(--space-8);
+  padding: var(--space-10);
   box-shadow: var(--shadow-sm);
   width: 100%;
   border: 1px solid var(--color-border-light);
 }
 
 .Header_Grafico {
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .Header_Grafico h3 {
@@ -143,11 +153,13 @@
 .Header_Grafico span {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+  margin-top: var(--space-2);
+  display: block;
 }
 
 .Area_Grafico {
-  margin-top: var(--space-5);
-  height: 320px;
+  margin-top: var(--space-6);
+  height: 380px;
   width: 100%;
 }
 
@@ -161,12 +173,58 @@
 
 /* Tablet */
 @media (max-width: 1024px) {
+  .Zona_De_Trabajo {
+    gap: var(--space-6);
+  }
+
   .Banner_Bienvenida {
-    padding: var(--space-6) var(--space-8);
+    padding: var(--space-8) var(--space-10);
+    min-height: 180px;
   }
 
   .Texto_Banner h1 {
     font-size: var(--font-size-xl);
+  }
+
+  .Imagen_Banner {
+    width: 150px;
+  }
+
+  .Seccion_Cards {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  .Card_Estadistica {
+    padding: var(--space-7) var(--space-8);
+    min-height: 110px;
+  }
+
+  .Contenedor_Grafico {
+    padding: var(--space-8);
+  }
+
+  .Area_Grafico {
+    height: 320px;
+  }
+}
+
+/* Móvil grande */
+@media (max-width: 768px) {
+  .Zona_De_Trabajo {
+    gap: var(--space-5);
+  }
+
+  .Banner_Bienvenida {
+    flex-direction: column-reverse;
+    text-align: center;
+    padding: var(--space-8);
+    gap: var(--space-6);
+    min-height: auto;
+  }
+
+  .Subtexto {
+    max-width: 100%;
   }
 
   .Imagen_Banner {
@@ -178,47 +236,16 @@
     gap: var(--space-4);
   }
 
-  .Contenedor_Grafico {
-    padding: var(--space-6);
-  }
-
-  .Area_Grafico {
-    height: 280px;
-  }
-}
-
-/* Móvil grande */
-@media (max-width: 768px) {
-  .Banner_Bienvenida {
-    flex-direction: column-reverse;
-    text-align: center;
-    padding: var(--space-6);
-    gap: var(--space-5);
-    min-height: auto;
-  }
-
-  .Subtexto {
-    max-width: 100%;
-  }
-
-  .Imagen_Banner {
-    width: 120px;
-  }
-
-  .Seccion_Cards {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-3);
-  }
-
   .Card_Estadistica {
-    padding: var(--space-4);
-    gap: var(--space-4);
+    padding: var(--space-6) var(--space-7);
+    gap: var(--space-5);
+    min-height: 100px;
   }
 
   .Icono_Circulo {
-    width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
+    width: 56px;
+    height: 56px;
+    font-size: 1.4rem;
   }
 
   .Info_Card strong {
@@ -226,19 +253,24 @@
   }
 
   .Contenedor_Grafico {
-    padding: var(--space-5);
+    padding: var(--space-6);
   }
 
   .Area_Grafico {
-    height: 240px;
+    height: 260px;
   }
 }
 
 /* Móvil pequeño */
 @media (max-width: 480px) {
+  .Zona_De_Trabajo {
+    gap: var(--space-4);
+  }
+
   .Banner_Bienvenida {
-    padding: var(--space-5);
+    padding: var(--space-6);
     border-radius: var(--radius-lg);
+    min-height: auto;
   }
 
   .Texto_Banner h1 {
@@ -254,20 +286,21 @@
   }
 
   .Imagen_Banner {
-    width: 100px;
+    width: 110px;
   }
 
   .Seccion_Cards {
     grid-template-columns: 1fr;
-    gap: var(--space-3);
+    gap: var(--space-4);
   }
 
   .Card_Estadistica {
-    padding: var(--space-4);
+    padding: var(--space-6) var(--space-7);
+    min-height: 95px;
   }
 
   .Contenedor_Grafico {
-    padding: var(--space-4);
+    padding: var(--space-5);
     border-radius: var(--radius-lg);
   }
 
@@ -280,6 +313,6 @@
   }
 
   .Area_Grafico {
-    height: 200px;
+    height: 220px;
   }
 }

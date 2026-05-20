@@ -131,7 +131,7 @@
 }
 
 .Tabla_Personalizada th {
-  text-align: left;
+  text-align: center;
   padding: var(--space-4) var(--space-3);
   color: var(--color-text-muted);
   font-weight: var(--font-weight-medium);
@@ -141,11 +141,31 @@
   border-bottom: 2px solid var(--color-border-light);
 }
 
+.Tabla_Personalizada th:first-child {
+  text-align: left;
+  padding-left: var(--space-6);
+}
+
+.Tabla_Personalizada th:last-child {
+  padding-right: var(--space-6);
+}
+
 .Tabla_Personalizada td {
   padding: var(--space-4) var(--space-3);
   border-bottom: 1px solid var(--color-border-light);
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.Tabla_Personalizada td:first-child {
+  text-align: left;
+  padding-left: var(--space-6);
+}
+
+.Tabla_Personalizada td:last-child {
+  padding-right: var(--space-6);
 }
 
 .Tabla_Personalized tbody tr:hover {
@@ -248,6 +268,13 @@
 
 .Estado_Punto.vencido::before {
   background: var(--color-text-muted);
+}
+
+.Acciones_Grupo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
 }
 
 .Btn_Accion {
