@@ -24,7 +24,8 @@ function Servicios() {
   const [equipos, setEquipos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchNoticiaTerm, setSearchNoticiaTerm] = useState('');
+  const [searchEquipoTerm, setSearchEquipoTerm] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
@@ -69,13 +70,23 @@ function Servicios() {
     }
   };
 
+  // Filtrar noticias
+  const noticiasFiltradas = noticias.filter(noticia => {
+    const searchMatch = searchNoticiaTerm === '' ||
+      noticia.titulo?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
+      noticia.descripcion?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
+      (noticia.autor_nombre && noticia.autor_nombre.toLowerCase().includes(searchNoticiaTerm.toLowerCase()));
+    
+    return searchMatch;
+  });
+
   // Filtrar equipos
   const equiposFiltrados = equipos.filter(equipo => {
-    const searchMatch = searchTerm === '' || 
-      equipo.numero.toString().includes(searchTerm) ||
-      equipo.marca?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      equipo.modelo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      equipo.serial?.toLowerCase().includes(searchTerm.toLowerCase());
+    const searchMatch = searchEquipoTerm === '' || 
+      equipo.numero.toString().includes(searchEquipoTerm) ||
+      equipo.marca?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
+      equipo.modelo?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
+      equipo.serial?.toLowerCase().includes(searchEquipoTerm.toLowerCase());
     
     const categoriaMatch = filtroCategoria === '' || 
       equipo.categoria_id.toString() === filtroCategoria;
@@ -242,19 +253,6 @@ function Servicios() {
             </div>
           </div>
 
-          <div className="Contenedor_Busqueda">
-            <div className="Barra_Busqueda">
-              <span className="Lupa">🔍</span>
-              <input 
-                type="text" 
-                placeholder="Buscar equipos por número, marca, modelo o serial" 
-                className="Input_Busqueda"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-          </div>
-
           <div className="Panel_Dual">
             {/* --- COLUMNA NOTICIAS --- */}
             <div className="Columna_Noticias">
@@ -262,17 +260,29 @@ function Servicios() {
                 <h3>Noticias</h3>
                 <button className="Btn_Añadir" onClick={() => setModalNoticia(true)}>+ Añadir</button>
               </div>
+
+              <div className="Barra_Busqueda_Columna">
+                <span className="Lupa">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Buscar noticias..." 
+                  className="Input_Busqueda_Columna"
+                  value={searchNoticiaTerm}
+                  onChange={(e) => setSearchNoticiaTerm(e.target.value)}
+                />
+              </div>
+
               <div className="Lista_Items">
                 {loading ? (
                   <div style={{ textAlign: 'center', padding: '20px' }}>
                     Cargando noticias...
                   </div>
-                ) : noticias.length === 0 ? (
+                ) : noticiasFiltradas.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                    No hay noticias publicadas
+                    No se encontraron noticias
                   </div>
                 ) : (
-                  noticias.map((noticia) => (
+                  noticiasFiltradas.map((noticia) => (
                     <div className="Card_Noticia" key={noticia.id}>
                       <div className="Icono_Noticia_Container">📰</div>
                       <div className="Info_Noticia">
@@ -312,6 +322,17 @@ function Servicios() {
               <div className="Fila_Titulo">
                 <h3>Equipos</h3>
                 <button className="Btn_Añadir" onClick={() => setModalRecurso(true)}>+ Añadir</button>
+              </div>
+
+              <div className="Barra_Busqueda_Columna">
+                <span className="Lupa">🔍</span>
+                <input 
+                  type="text" 
+                  placeholder="Buscar equipos por número, marca, modelo o serial..." 
+                  className="Input_Busqueda_Columna"
+                  value={searchEquipoTerm}
+                  onChange={(e) => setSearchEquipoTerm(e.target.value)}
+                />
               </div>
               
               <div className="Filtros_Simulados">

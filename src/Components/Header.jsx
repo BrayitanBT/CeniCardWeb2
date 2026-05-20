@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../Context/AuthContext';
 import { cerrarSesion, obtenerPerfilUsuario } from '../services/tasks';
 import Swal from 'sweetalert2';
 import "../Style/Header.css";

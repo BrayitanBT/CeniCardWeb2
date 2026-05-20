@@ -914,8 +914,8 @@ Estilos adicionales para modal de edición completo ─────────�
     max-height: 85vh;
     padding: 20px 18px 28px;
   }
-}/
-* ── Estilos para selectores en modal ──────────────────────────────────── */
+}
+/* ── Estilos para selectores en modal ──────────────────────────────────── */
 .Modal_Select_Perfil {
   width: 100%;
   background: rgba(200,230,201,0.35);

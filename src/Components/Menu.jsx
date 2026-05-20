@@ -26,9 +26,9 @@ function MenuLateral() {
           <span>Usuarios</span>
         </NavLink>
 
-        <NavLink to="/Solicitudes " className="Item_Menu">
+        <NavLink to="/Solicitudes" className="Item_Menu">
           <FaFolder className="Icono" />
-          <span>Solicitudes </span>
+          <span>Solicitudes</span>
         </NavLink>
 
         <NavLink to="/Servicios" className="Item_Menu">
