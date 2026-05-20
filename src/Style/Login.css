@@ -1,0 +1,123 @@
+@import url('https://fonts.googleapis.com/css2?family=Delius+Unicase:wght@400;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lilita+One&family=Momo+Signature&family=Noto+Sans+JP:wght@100..900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Unna:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+body{
+    margin: 0%;
+    padding: 0%;
+}
+
+.Contenedor_Login{
+    background-image: url(../Img/Fondo.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0 ;
+    padding: 0;
+}
+.Tarjeta_login{
+    font-family: "Raleway", sans-serif;
+    display: flex;
+    width: 1100px;
+    height: 700px;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15) ;
+    background-image: url(../Img/FondoTarjeta.jpeg); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.Info_login{
+    flex: 1.2;
+    padding: 40px 50px 0 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    justify-content: space-between;
+    position: relative;
+    background-color: transparent; 
+}
+
+.Titulo{
+    font-family: "Raleway", sans-serif;
+    color:rgb(30, 167, 30) ;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    font-weight: 800;
+    width: 100%;
+}
+.Imagen{
+    width: 100%;
+    max-width: 650px;
+    object-fit: contain;
+    align-items: flex-end;
+}
+.imagen {
+    width: 100%;
+    max-width: 600px; 
+    display: block;
+    object-fit: contain;
+    margin-bottom: -5px; 
+}
+.Formu{
+    font-family: "Raleway", sans-serif;
+    flex: 1;
+    background-color: #05924e;
+    color: white;
+    display: flex;
+    padding: 60px 40px;
+    flex-direction: column;
+    justify-content: center;
+}
+.Titulo_Login{
+    font-size: 2.5rem;
+    margin-bottom: 55px;
+    text-align: center;
+}
+.Formu_Info{
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+}
+.Formu_Info label{
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.Formu_Info input{
+    padding: 15px;
+    border-radius: 25px;
+    border: none;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    outline: none;
+}
+.Formu_Info input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+.btn_Ingresar{
+    margin-top: 30px;
+    margin-left: 30px;
+    width: 80%;
+    padding: 12px;
+    border-radius: 25px;
+    border: none;
+    height: 55px;
+    text-align: center;
+    justify-content: center;
+    background-color: antiquewhite;
+    color: rgb(8, 94, 8);
+    font-weight: bold;
+
+    
+}
+
+.Enlace{
+    text-decoration: underline;
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+}

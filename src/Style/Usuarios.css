@@ -1,0 +1,306 @@
+
+.Admin_Usuarios {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f9fbf7; 
+}
+
+.Contenedor_Usuarios {
+    flex: 1;
+    margin-left: 250px; 
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 250px);
+    transition: all 0.3s ease;
+}
+
+.Zona_Trabajo_Usuario {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+
+.Header_Seccion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Header_Seccion h2 {
+    color: #333;
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.Btn_Añadir {
+    background-color: #05924e;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.Barra_Filtros {
+    background: white;
+    padding: 15px 30px;
+    border-radius: 60px; 
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid #ececec;
+}
+
+.Input_Busqueda {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f3f4;
+    padding: 10px 20px;
+    border-radius: 40px;
+}
+
+.Input_Busqueda input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.Select_Filtro {
+    background: #f1f3f4;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 40px;
+    color: #666;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+}
+
+
+.Contenedor_Tabla_Usuarios {
+    background: white;
+    border-radius: 35px; 
+    padding: 20px 30px;
+    border: 1px solid #ececec;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+}
+
+.Tabla_Personalizada {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.Tabla_Personalizada th {
+    text-align: left;
+    padding: 20px 10px;
+    color: #99a1a8;
+    font-weight: 500;
+    font-size: 0.9rem;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.Tabla_Personalizada td {
+    padding: 15px 10px;
+    border-bottom: 1px solid #f8f9fa;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.Usuario_Info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.Avatar_Mini {
+    width: 38px;
+    height: 38px;
+    background: #f1f3f4;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e0e0e0;
+    font-size: 1.1rem;
+}
+
+.Badge_Rol {
+    background: #69b47a;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 40px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+
+.Estado_Punto {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.Estado_Punto::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.Estado_Punto.activo { 
+    color: #69b47a; 
+}
+
+.Estado_Punto.activo::before { 
+    background: #69b47a; 
+}
+
+.Estado_Punto.vencido { 
+    color: #d9534f; 
+}
+
+.Estado_Punto.vencido::before { 
+    background: #d9534f; 
+}
+
+
+.Btn_Accion {
+    background: #f1f3f4;
+    border: 1px solid #e0e0e0;
+    padding: 8px 18px;
+    border-radius: 40px;
+    color: #777;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.Btn_Accion:hover {
+    background: #e8eaeb;
+}
+
+.Btn_Accion.gray {
+    opacity: 0.6;
+}
+
+
+
+
+
+/* Estilos para los diferentes roles */
+.Badge_Rol.admin {
+  background-color: #dc3545;
+  color: white;
+}
+
+.Badge_Rol.funcionario {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.Badge_Rol.contratista {
+  background-color: #6c757d;
+  color: white;
+}
+
+.Badge_Rol.aprendiz {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Estilos para los diferentes estados del carné */
+.Estado_Punto.activo {
+  color: #28a745;
+}
+
+.Estado_Punto.activo::before {
+  background-color: #28a745;
+}
+
+.Estado_Punto.bloqueado {
+  color: #dc3545;
+}
+
+.Estado_Punto.bloqueado::before {
+  background-color: #dc3545;
+}
+
+.Estado_Punto.prestamo {
+  color: #ffc107;
+}
+
+.Estado_Punto.prestamo::before {
+  background-color: #ffc107;
+}
+
+.Estado_Punto.vencido {
+  color: #6c757d;
+}
+
+.Estado_Punto.vencido::before {
+  background-color: #6c757d;
+}
+
+/* Estilo para el avatar mini */
+.Avatar_Mini {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+/* Botón eliminar */
+.Btn_Accion.delete:hover {
+  background-color: #c82333 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 1024px) {
+    .Contenedor_Usuarios { 
+        margin-left: 240px; 
+        width: calc(100% - 240px); 
+    }
+}
+
+@media (max-width: 768px) {
+    .Contenedor_Usuarios { 
+        margin-left: 70px; 
+        width: calc(100% - 70px); 
+    }
+    .Barra_Filtros { 
+        flex-direction: column; 
+        border-radius: 20px; 
+    }
+}

@@ -1,0 +1,85 @@
+body{
+    margin: 0%;
+    padding: 0%;
+}
+.Menu_Lateral {
+    width: 260px;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    position: fixed;
+    left: 0;
+    top: 0;
+}
+.Item_Menu.active {
+    background-color: #05924e;
+    color: #ffffff;
+}
+
+.Item_Menu.active .Icono {
+    color: #ffffff;
+}
+
+.Logo_Seccion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 40px;
+    padding-left: 10px;
+}
+
+.Logo_Sena_Icono {
+    width: 40px;
+    height: auto;
+}
+
+.Texto_Logo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+}
+
+.Ceni {
+    font-weight: 800;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.Carne {
+    color: #05924e;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.Opciones_Menu {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.Item_Menu {
+    display: flex;
+    align-items: center;
+    padding: 30px 15px;
+    text-decoration: none;
+    color: #9ea0a5; 
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: 0.3s ease;
+}
+
+.Icono {
+    margin-right: 15px;
+    font-size: 1.2rem;
+}
+
+
+
+.Item_Menu:hover:not(.activo) {
+    background-color: #f4fbf7;
+    color: #05924e;
+}

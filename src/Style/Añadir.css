@@ -1,0 +1,126 @@
+.Admin_Añadir {
+  display: flex;
+  background-color: #f6f8f1;
+  min-height: 100vh;
+}
+
+.Contenedor_Añadir {
+  flex: 1;
+  margin-left: 260px; 
+  display: flex;
+  flex-direction: column;
+}
+
+.Zona_Trabajo_Añadir {
+  padding: 30px 50px;
+}
+
+.Panel_Blanco_Añadir {
+  background: white;
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  margin-top: 20px;
+  text-align: center;
+}
+
+.Titulo_Interno {
+  font-size: 1.8rem;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.Barra_Verde_Acciones {
+  background-color: #55a67a; 
+  border-radius: 15px;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Tag_Entregados {
+  color: white;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.Buscador_Tabla {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 5px 15px;
+  width: 50%;
+}
+
+.Buscador_Tabla input {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+}
+
+.Buscador_Tabla input::placeholder { 
+  color: rgba(255,255,255,0.7); 
+}
+
+
+.Contenedor_Tabla {
+  overflow-x: auto; 
+}
+
+.Tabla_Entregas {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.Tabla_Entregas th {
+  color: #b5b5b5;
+  font-weight: 500;
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.Tabla_Entregas td {
+  padding: 15px;
+  color: #555;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.Hora_Pill {
+  background: #f0f0f0;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+}
+
+.Estado_Check {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.Btn_Liberar {
+  background: #002b3d;
+  color: white;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.Btn_Entregado {
+  background: #b5b5b5;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 8px;
+}
+
+@media (max-width: 1024px) {
+  .Zona_Trabajo_Añadir { padding: 20px; }
+  .Buscador_Tabla { width: 70%; }
+}

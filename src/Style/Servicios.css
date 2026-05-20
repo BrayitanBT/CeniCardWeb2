@@ -1,0 +1,419 @@
+/* --- 1. ESTRUCTURA BASE Y RESET --- */
+.Admin_Servicios {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f6f8f1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.Contenedor_Servicios {
+  flex: 1;
+  margin-left: 260px; 
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: margin-left 0.3s ease; 
+}
+
+.Area_Trabajo_Main {
+  padding: 20px 40px;
+  flex: 1;  
+}
+
+/* --- 2. TEXTOS (QUITAR NEGRILLAS) --- */
+p, span, li, input, select, textarea, .Label_Form {
+  font-weight: 400 !important;
+  color: #666;
+}
+
+h2, h3, h4, strong {
+  font-weight: 600; /* Semibold para jerarquía, no negrita pesada */
+  color: #333;
+}
+
+/* --- 3. BUSCADOR ESTILIZADO --- */
+.Contenedor_Busqueda {
+  margin-bottom: 25px;
+}
+
+.Barra_Busqueda {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 15px 15px;
+  max-width: 500px;
+  transition: all 0.4s ease;
+  left: 50%;
+  transform: translateX(-50%);
+  position: relative;
+  box-shadow: 0 ;
+}
+
+.Barra_Busqueda:focus-within {
+  border-color: #92b347;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.Input_Busqueda {
+  border: none !important;
+  outline: none !important;
+  background: transparent;
+  width: 100%;
+  margin-left: 10px;
+  font-size: 0.95rem;
+}
+
+.Lupa {
+  font-size: 1.1rem;
+  opacity: 0.5;
+}
+
+/* --- 4. PANEL DUAL Y COLUMNAS --- */
+.Panel_Dual {
+  display: grid;
+  grid-template-columns: 1fr 1fr; 
+  gap: 30px;
+  margin-top: 20px;
+  align-items: start;
+}
+
+.Columna_Noticias, .Columna_Recursos {
+  background: white;
+  border-radius: 25px;
+  padding: 25px;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+}
+
+.Fila_Titulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Btn_Añadir {
+  background: #92b347;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.3s;
+}
+
+.Btn_Añadir:hover {
+  background: #7ca035;
+}
+
+/* --- 5. CARDS (NOTICIAS Y RECURSOS) --- */
+.Card_Noticia, .Card_Recurso {
+  display: flex;
+  background-color: #fdfdf5;
+  border: 1px solid #f0f0e0;
+  border-radius: 15px;
+  padding: 15px;
+  margin-bottom: 15px;
+  gap: 15px;
+}
+
+.Icono_Noticia_Container, .Icono_Recurso_Container {
+  background: white;
+  border: 1px solid #eee;
+  min-width: 70px;
+  height: 70px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.Tag_Verde {
+  background: #e8f5e9;
+  color: #2e7d32;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+/* Filtros y Estados de Recursos */
+.Filtros_Simulados {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.Select_Filtro {
+  background: #efefef;
+  border: 1px solid #e0e0e0;
+  border-radius: 50px;
+  padding: 6px 15px;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.Tag_Estado {
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  display: inline-block;
+}
+
+.Tag_Estado.green { background: #d1f7e4; color: #006b33; }
+.Tag_Estado.orange { background: #fee9cf; color: #bf6610; }
+.Tag_Estado.red { background: #fee1e1; color: #9d1c1c; }
+
+.Programas_Recurso {
+  border-left: 1px solid #eee;
+  padding-left: 15px;
+  margin-left: 10px;
+  min-width: 120px;
+}
+
+.Lista_Programas {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0 0;
+  font-size: 0.75rem;
+}
+
+/* --- 6. MODAL (ESTILO SEGÚN IMAGEN) --- */
+.Overlay_Modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(2px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+  padding: 20px;
+}
+
+.Contenedor_Modal_Añadir {
+  background: white;
+  width: 100%;
+  max-width: 440px;
+  border-radius: 28px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+.Header_Modal_Añadir {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.Titulo_Modal {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.Cerrar_X {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  background: none;
+  border: none;
+  font-size: 2.2rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.Campo_Form {
+  margin-bottom: 18px;
+}
+
+.Label_Form {
+  display: block;
+  font-size: 1.1rem;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.Input_Texto, .Input_Area {
+  width: 100%;
+  border: 1px solid #dcdcdc;
+  border-radius: 14px;
+  padding: 12px 15px;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.Input_Texto:focus, .Input_Area:focus {
+  border-color: #92b347;
+}
+
+.Input_Area {
+  height: 110px;
+  resize: none;
+}
+
+/* Upload Sección */
+.Seccion_Upload {
+  margin-bottom: 25px;
+}
+
+.Input_File_Oculto {
+  display: none; /* Oculto sin usar inline style */
+}
+
+.Boton_Icono_Galeria {
+  display: inline-block;
+  cursor: pointer;
+  margin-top: 5px;
+}
+
+.Imagen_Icono_Modal {
+  width: 45px;
+  height: auto;
+  transition: transform 0.2s;
+}
+
+.Imagen_Icono_Modal:hover {
+  transform: scale(1.1);
+}
+
+/* Botón Publicar */
+.Footer_Publicar {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.Btn_Publicar {
+  background-color: #007a33; /* Verde oscuro de la imagen */
+  color: white;
+  border: none;
+  padding: 12px 35px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.Simbolo_Mas {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+/* --- 7. RESPONSIVE --- */
+@media (max-width: 992px) {
+  .Panel_Dual { grid-template-columns: 1fr; }
+  .Contenedor_Servicios { margin-left: 240px; }
+}
+
+@media (max-width: 768px) {
+  .Contenedor_Servicios { margin-left: 0; }
+  .Area_Trabajo_Main { padding: 15px; }
+  .Card_Recurso { flex-direction: column; }
+  .Programas_Recurso { border: none; padding: 0; margin: 0; border-top: 1px solid #eee; padding-top: 10px; }
+}
+
+/* --- ESTILOS ESPECÍFICOS MODAL RECURSOS --- */
+
+.Contenedor_Modal_Recurso {
+  background: white;
+  width: 95%;
+  max-width: 550px; /* Un poco más ancho para las columnas */
+  border-radius: 28px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+}
+
+/* Fila de Nombre, Tipo y Material */
+.Fila_Triple {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+/* Selects específicos del modal */
+.Select_Modal {
+  width: 100%;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+/* Input con bordes muy redondeados (Nombre) */
+.Input_Texto_Redondo {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  padding: 8px 15px;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.Input_Area_Recurso {
+  width: 100%;
+  height: 80px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 12px;
+  resize: none;
+  outline: none;
+}
+
+/* Las dos cajas de abajo (Características y Programas) */
+.Fila_Dual_Cajas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
+.Caja_Detalle {
+  width: 100%;
+  height: 150px;
+  border: 1px solid #ccc;
+  border-radius: 15px;
+  padding: 12px;
+  font-size: 0.85rem;
+  resize: none;
+  outline: none;
+  background-color: transparent;
+}
+
+/* Botón Guardar (Verde oscuro como la imagen) */
+.Btn_Guardar_Verde {
+  background-color: #007a33;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+/* Ajuste responsive para el modal */
+@media (max-width: 500px) {
+  .Fila_Triple, .Fila_Dual_Cajas {
+    grid-template-columns: 1fr;
+  }
+}

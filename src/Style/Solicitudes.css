@@ -1,0 +1,228 @@
+.Admin_Solicitudes { 
+    display: flex; 
+    width: 100%; 
+    min-height: 100vh; 
+    background-color: #f9fbf7; 
+}
+
+.Contenedor_Solicitudes { 
+    flex: 1; 
+    margin-left: 250px; 
+    display: flex; 
+    flex-direction: column; 
+    width: calc(100% - 250px); 
+}
+
+.Zona_Trabajo_Solicitudes { 
+    padding: 30px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+}
+
+.Header_Seccion_Solicitudes { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: flex-start; 
+    margin-bottom: 10px; 
+}
+
+.Texto_Header h2 { 
+    color: #333; 
+    font-size: 1.8rem; 
+    margin-bottom: 5px; 
+}
+
+.Texto_Header p { 
+    color: #777; 
+    font-size: 0.95rem; 
+}
+
+.Acciones_Header { 
+    display: flex; 
+    gap: 15px; 
+}
+
+.Btn_Historial {
+    background: transparent;
+    border: 2px solid #000000;
+    padding: 10px 30px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none
+}
+
+.Btn_Añadir_Solicitud {
+    background: #05924e;
+    color: white;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 40px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none
+}
+
+
+.Barra_Filtros_Solicitudes {
+    background: white;
+    padding: 15px 30px;
+    border-radius: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+    border: 1px solid #ececec;
+}
+
+.Input_Busqueda_S {
+    background: #f1f3f4;
+    padding: 10px 25px;
+    border-radius: 40px;
+    width: 40%;
+    display: flex;
+    gap: 10px;
+}
+
+.Input_Busqueda_S input { 
+    border: none; 
+    background: transparent; 
+    outline: none; 
+    width: 100%; 
+}
+
+.Grupo_Selects { 
+    display: flex; 
+    gap: 10px; 
+}
+
+.Select_S { 
+    background: #f1f3f4; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 15px; 
+    color: #777; 
+    font-size: 0.9rem; 
+}
+
+.Contenedor_Tabla_Solicitudes { 
+    background: white; 
+    border-radius: 40px; 
+    padding: 20px; 
+    border: 1px solid #ececec; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+}
+
+.Tabla_Solicitudes {
+    width: 100%; 
+    border-collapse: collapse; 
+    text-align: center; 
+}
+
+.Tabla_Solicitudes th { 
+    padding: 20px; 
+    color: #99a1a8; 
+    font-weight: 500; 
+    font-size: 0.85rem; 
+    border-bottom: 1px solid #f8f9fa; 
+}
+
+.Tabla_Solicitudes td { 
+    padding: 18px; 
+    border-bottom: 1px solid #f8f9fa; 
+    font-size: 0.9rem; 
+    color: #333; 
+    font-weight: 500;
+}
+
+
+.Celda_Acciones { 
+    display: flex; 
+    gap: 10px; 
+    justify-content: center; 
+}
+
+.Btn_Check {
+    background: #05924e;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Btn_Close {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
+
+/* Estados de los préstamos */
+.Estado_Punto.pendiente {
+  color: #ffc107;
+}
+
+.Estado_Punto.pendiente::before {
+  background-color: #ffc107;
+}
+
+.Estado_Punto.aceptado {
+  color: #28a745;
+}
+
+.Estado_Punto.aceptado::before {
+  background-color: #28a745;
+}
+
+.Estado_Punto.rechazado {
+  color: #dc3545;
+}
+
+.Estado_Punto.rechazado::before {
+  background-color: #dc3545;
+}
+
+.Estado_Punto.devuelto {
+  color: #6c757d;
+}
+
+.Estado_Punto.devuelto::before {
+  background-color: #6c757d;
+}
+
+/* Hover effects para botones */
+.Btn_Check:hover {
+  background-color: #28a745;
+  transform: scale(1.05);
+}
+
+.Btn_Close:hover {
+  background-color: #dc3545;
+  transform: scale(1.05);
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+tbody tr td[colspan="7"] {
+  animation: pulse 1.5s ease-in-out infinite;
+}

@@ -1,0 +1,954 @@
+/* ── Layout base ─────────────────────────────────────────────────────────── */
+.Admin_Perfil {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f4f7f4;
+}
+
+.Contenedor_Perfil {
+  flex: 1;
+  margin-left: 260px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.Perfil_Zona_Trabajo {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 28px;
+  padding: 28px 32px;
+  align-items: start;
+}
+
+/* ── Loading ─────────────────────────────────────────────────────────────── */
+.Perfil_Loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 16px;
+  color: #666;
+}
+
+.Perfil_Spinner {
+  width: 40px; 
+  height: 40px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #2E7D32;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+PANEL IZQUIERDO: CARNET
+══════════════════════════════════════════════════════════════════════════ */
+.Perfil_Panel_Carnet {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  position: sticky;
+  top: 28px;
+}
+
+.Perfil_Carnet_Titulo {
+  text-align: center;
+  width: 100%;
+}
+
+.Perfil_Carnet_Titulo h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+
+.Perfil_Carnet_Hint {
+  font-size: 0.78rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ── Flip card ───────────────────────────────────────────────────────────── */
+.Carnet_Flip_Wrapper {
+  width: 300px;
+  height: 490px;
+  perspective: 1200px;
+  cursor: pointer;
+}
+
+.Carnet_Flip_Wrapper.no-flip { 
+  cursor: default; 
+}
+
+.Carnet_Flip_Inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.Carnet_Flip_Wrapper.volteado .Carnet_Flip_Inner {
+  transform: rotateY(180deg);
+}
+
+.Carnet_Cara {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  border-radius: 20px;
+  background: #fff;
+  padding: 18px;
+  border: 1.5px solid #C8E6C9;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.Carnet_Reverso { 
+  transform: rotateY(180deg); 
+}
+
+.Carnet_Borde_Bloqueado { 
+  border-color: #FFCDD2 !important; 
+}
+
+/* ── Fecha animada ───────────────────────────────────────────────────────── */
+.Fecha_Anim_Container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.Fecha_Anim_Badge {
+  position: absolute;
+  top: 0; 
+  left: 0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* ── Frente: contenido interno ───────────────────────────────────────────── */
+.Carnet_Frente_Inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.Carnet_Foto_Row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.Carnet_Logo_Sena {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.Logo_Sena_Text {
+  font-size: 1.3rem;
+  font-weight: 900;
+  color: #2E7D32;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.Logo_Sub_Text {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.Carnet_Foto_Box {
+  width: 100px; 
+  height: 130px;
+  background: #E0E0E0;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Carnet_Foto_Img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.Carnet_Foto_Text { 
+  font-size: 0.65rem; 
+  color: #999; 
+  font-weight: 600; 
+  text-align: center; 
+}
+
+.Carnet_Rol_Label {
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  color: #666;
+  margin: 4px 0 6px;
+}
+
+.Carnet_Separador {
+  height: 3px; 
+  background: #2E7D32; 
+  border-radius: 2px; 
+  margin-bottom: 10px;
+}
+
+.Carnet_Separador_Delgado {
+  height: 2px; 
+  background: #2E7D32; 
+  border-radius: 2px; 
+  margin: 8px 0 10px;
+}
+
+.Carnet_Nombre {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #2E7D32;
+  margin: 0 0 8px;
+  line-height: 1.25;
+  flex-shrink: 1;
+}
+
+.Carnet_Campo {
+  font-size: 0.82rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.Carnet_Fecha_Row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 4px 0 10px;
+  gap: 8px;
+}
+
+.Carnet_Fecha_Badge {
+  background: #2E7D32;
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.Carnet_Regional {
+  font-size: 0.80rem; 
+  color: #666; 
+  margin-bottom: 3px;
+}
+
+.Carnet_Centro {
+  font-size: 0.78rem; 
+  font-weight: 700; 
+  color: #2E7D32;
+}
+
+/* ── Reverso ─────────────────────────────────────────────────────────────── */
+.Carnet_Reverso_Inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.Carnet_Reverso_Titulo {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a1a1a;
+  text-align: center;
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.Carnet_Info_Row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(46,125,50,0.07);
+  border-radius: 10px;
+  padding: 7px 9px;
+  margin-bottom: 5px;
+}
+
+.Carnet_Info_Icon {
+  font-size: 1rem;
+  width: 26px; 
+  height: 26px;
+  border-radius: 50%;
+  background: #E8F5E9;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.Carnet_Info_Textos { 
+  flex: 1; 
+  min-width: 0; 
+}
+
+.Carnet_Info_Label {
+  display: block;
+  font-size: 0.55rem;
+  font-weight: 700;
+  color: #999;
+  letter-spacing: 0.4px;
+  margin-bottom: 1px;
+  text-transform: uppercase;
+}
+
+.Carnet_Info_Valor {
+  display: block;
+  font-size: 0.72rem;
+  color: #1a1a1a;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+/* ── Bloqueado ───────────────────────────────────────────────────────────── */
+.Carnet_Bloqueado_Wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.Carnet_Alerta_Box {
+  background: #FFF3E0;
+  border: 1px solid #FFCCBC;
+  border-radius: 16px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.Carnet_Alerta_Icon { 
+  font-size: 2rem; 
+  margin-bottom: 10px; 
+}
+
+.Carnet_Alerta_Titulo {
+  font-size: 1rem; 
+  font-weight: 800; 
+  color: #1a1a1a;
+  text-align: center; 
+  margin: 0 0 10px; 
+  line-height: 1.3;
+}
+
+.Carnet_Estado_Badge {
+  border-radius: 14px;
+  padding: 4px 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+.Carnet_Estado_Badge.bloqueado { 
+  background: #B71C1C; 
+}
+
+.Carnet_Estado_Badge.prestamo  { 
+  background: #E65100; 
+}
+
+.Carnet_Estado_Badge.vencido   { 
+  background: #6D4C41; 
+}
+
+.Carnet_Alerta_Desc { 
+  font-size: 0.72rem; 
+  color: #777; 
+  text-align: center; 
+  line-height: 1.5; 
+}
+
+/* ── Acciones bajo el carnet ─────────────────────────────────────────────── */
+.Carnet_Acciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.Btn_Estado_Carne {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1.5px solid;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px;
+}
+
+.Btn_Estado_Carne.bloquear {
+  background: #fff; 
+  color: #C62828; 
+  border-color: #C62828;
+}
+
+.Btn_Estado_Carne.bloquear:hover { 
+  background: #ffebee; 
+}
+
+.Btn_Estado_Carne.desbloquear {
+  background: #2E7D32; 
+  color: #fff; 
+  border-color: #2E7D32;
+}
+
+.Btn_Estado_Carne.desbloquear:hover { 
+  background: #256427; 
+}
+
+.Btn_Editar_Perfil_Carnet {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+  background: #f4f7f4;
+  border: 1.5px solid #c8e6c9;
+  color: #2E7D32;
+  transition: all 0.2s;
+}
+
+.Btn_Editar_Perfil_Carnet:hover { 
+  background: #e8f5e9; 
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+PANEL DERECHO: INFO
+══════════════════════════════════════════════════════════════════════════ */
+.Perfil_Panel_Info {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.Perfil_Info_Header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px 24px;
+  border: 1px solid #e8f5e9;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.Perfil_Avatar_Grande {
+  width: 72px; 
+  height: 72px;
+  border-radius: 50%;
+  background: #2E7D32;
+  overflow: hidden;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  flex-shrink: 0;
+  border: 3px solid #C8E6C9;
+}
+
+.Perfil_Avatar_Grande img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+.Perfil_Avatar_Grande span { 
+  color: #fff; 
+  font-size: 1.8rem; 
+  font-weight: 800; 
+}
+
+.Perfil_Info_Header_Text h2 {
+  font-size: 1.25rem; 
+  font-weight: 800; 
+  color: #1a1a1a; 
+  margin: 0 0 6px;
+}
+
+.Perfil_Rol_Badge {
+  font-size: 0.68rem; 
+  font-weight: 800; 
+  letter-spacing: 1px;
+  padding: 3px 10px; 
+  border-radius: 8px;
+}
+
+.Perfil_Rol_Badge.admin       { 
+  background: #ede7f6; 
+  color: #4527a0; 
+}
+
+.Perfil_Rol_Badge.funcionario { 
+  background: #e3f2fd; 
+  color: #0d47a1; 
+}
+
+.Perfil_Rol_Badge.contratista { 
+  background: #fff3e0; 
+  color: #bf360c; 
+}
+
+.Perfil_Rol_Badge.aprendiz    { 
+  background: #e8f5e9; 
+  color: #1b5e20; 
+}
+
+/* ── Grid de info ────────────────────────────────────────────────────────── */
+.Perfil_Info_Grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.Perfil_Info_Card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #eef5ee;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
+}
+
+.Perfil_Info_Card:hover { 
+  box-shadow: 0 4px 12px rgba(46,125,50,0.1); 
+}
+
+.Perfil_Info_Card_Icon { 
+  font-size: 1.3rem; 
+  flex-shrink: 0; 
+}
+
+.Perfil_Info_Card_Text { 
+  display: flex; 
+  flex-direction: column; 
+  min-width: 0; 
+}
+
+.Perfil_Info_Label {
+  font-size: 0.65rem; 
+  font-weight: 700; 
+  color: #aaa;
+  text-transform: uppercase; 
+  letter-spacing: 0.5px; 
+  margin-bottom: 2px;
+}
+
+.Perfil_Info_Valor {
+  font-size: 0.88rem; 
+  font-weight: 600; 
+  color: #2a2a2a;
+  white-space: nowrap; 
+  overflow: hidden; 
+  text-overflow: ellipsis;
+}
+
+/* ── Estado del carné ────────────────────────────────────────────────────── */
+.Perfil_Estado_Section {
+  background: #fff;
+  border-radius: 16px;
+  padding: 18px 22px;
+  border: 1px solid #eef5ee;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+
+.Perfil_Estado_Section h3 {
+  font-size: 0.85rem; 
+  font-weight: 700; 
+  color: #888;
+  text-transform: uppercase; 
+  letter-spacing: 0.5px; 
+  margin: 0 0 12px;
+}
+
+.Perfil_Estado_Big {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.Perfil_Estado_Big.estado-activo    { 
+  background: #e8f5e9; 
+  color: #1b5e20; 
+}
+
+.Perfil_Estado_Big.estado-bloqueado { 
+  background: #ffebee; 
+  color: #b71c1c; 
+}
+
+.Perfil_Estado_Big.estado-vencido   { 
+  background: #fff3e0; 
+  color: #e65100; 
+}
+
+.Perfil_Estado_Big.estado-prestamo  { 
+  background: #fff8e1; 
+  color: #f57f17; 
+}
+
+.Perfil_Estado_Dot {
+  width: 10px; 
+  height: 10px; 
+  border-radius: 50%;
+}
+
+.estado-activo    .Perfil_Estado_Dot { 
+  background: #2E7D32; 
+  box-shadow: 0 0 0 3px #c8e6c9; 
+}
+
+.estado-bloqueado .Perfil_Estado_Dot { 
+  background: #c62828; 
+  box-shadow: 0 0 0 3px #ffcdd2; 
+}
+
+.estado-vencido   .Perfil_Estado_Dot { 
+  background: #e65100; 
+  box-shadow: 0 0 0 3px #ffe0b2; 
+}
+
+.estado-prestamo  .Perfil_Estado_Dot { 
+  background: #f9a825; 
+  box-shadow: 0 0 0 3px #fff9c4; 
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+MODALES
+══════════════════════════════════════════════════════════════════════════ */
+.Modal_Overlay_Perfil {
+  position: fixed; 
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex; 
+  align-items: flex-end; 
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { 
+  from { opacity:0 } 
+  to { opacity:1 } 
+}
+
+.Modal_Card_Perfil {
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  padding: 28px 26px 36px;
+  width: 100%; 
+  max-width: 480px;
+  animation: slideUp 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+@keyframes slideUp { 
+  from { transform: translateY(60px); opacity:0 } 
+  to { transform: translateY(0); opacity:1 } 
+}
+
+.Modal_Grande { 
+  max-width: 520px; 
+  max-height: 90vh; 
+  overflow-y: auto; 
+}
+
+.Modal_Titulo_Perfil {
+  font-size: 1.2rem; 
+  font-weight: 800; 
+  color: #1a1a1a; 
+  margin: 0 0 6px;
+}
+
+.Modal_Sub_Perfil {
+  font-size: 0.82rem; 
+  color: #777; 
+  margin: 0 0 18px; 
+  line-height: 1.5;
+}
+
+.Modal_Campo_Perfil { 
+  margin-bottom: 12px; 
+}
+
+.Modal_Campo_Perfil label {
+  display: block; 
+  font-size: 0.78rem; 
+  font-weight: 600; 
+  color: #444; 
+  margin-bottom: 5px;
+}
+
+.Modal_Input_Perfil {
+  width: 100%;
+  background: rgba(200,230,201,0.35);
+  border: 1.5px solid #C8E6C9;
+  border-radius: 30px;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+}
+
+.Modal_Input_Perfil:focus { 
+  border-color: #2E7D32; 
+}
+
+.Modal_Btn_Perfil {
+  width: 100%;
+  background: #2D6A2D;
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 14px;
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-bottom: 12px;
+  transition: background 0.2s;
+}
+
+.Modal_Btn_Perfil:hover:not(:disabled) { 
+  background: #1b5e20; 
+}
+
+.Modal_Btn_Perfil:disabled { 
+  opacity: 0.7; 
+  cursor: not-allowed; 
+}
+
+.Modal_Cancelar_Perfil {
+  display: block; 
+  width: 100%; 
+  text-align: center;
+  background: none; 
+  border: none;
+  font-size: 0.88rem; 
+  color: #aaa; 
+  cursor: pointer; 
+  padding: 4px;
+}
+
+.Modal_Cancelar_Perfil:hover { 
+  color: #666; 
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .Perfil_Zona_Trabajo { 
+    grid-template-columns: 300px 1fr; 
+  }
+  
+  .Carnet_Flip_Wrapper { 
+    width: 270px; 
+    height: 445px; 
+  }
+}
+
+@media (max-width: 1024px) {
+  .Contenedor_Perfil { 
+    margin-left: 240px; 
+  }
+  
+  .Perfil_Info_Grid { 
+    grid-template-columns: 1fr 1fr; 
+  }
+}
+
+@media (max-width: 900px) {
+  .Perfil_Zona_Trabajo { 
+    grid-template-columns: 1fr; 
+  }
+  
+  .Perfil_Panel_Carnet { 
+    position: static; 
+  }
+  
+  .Carnet_Flip_Wrapper { 
+    width: 280px; 
+    height: 460px; 
+  }
+  
+  .Carnet_Acciones { 
+    max-width: 280px; 
+    margin: 0 auto; 
+  }
+}
+
+@media (max-width: 768px) {
+  .Contenedor_Perfil { 
+    margin-left: 70px; 
+  }
+  
+  .Perfil_Zona_Trabajo { 
+    padding: 18px; 
+  }
+  
+  .Perfil_Info_Grid { 
+    grid-template-columns: 1fr; 
+  }
+}
+
+@media (max-width: 480px) {
+  .Contenedor_Perfil { 
+    margin-left: 0; 
+  }
+  
+  .Perfil_Zona_Trabajo { 
+    padding: 14px; 
+  }
+}
+/* ── 
+Estilos adicionales para modal de edición completo ─────────────────── */
+.Modal_Seccion_Perfil {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e8f5e9;
+}
+
+.Modal_Seccion_Perfil:last-of-type {
+  border-bottom: none;
+  margin-bottom: 16px;
+}
+
+.Modal_Seccion_Titulo {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #2E7D32;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.Modal_Grid_Perfil {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.Modal_Textarea_Perfil {
+  width: 100%;
+  background: rgba(200,230,201,0.35);
+  border: 1.5px solid #C8E6C9;
+  border-radius: 16px;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.Modal_Textarea_Perfil:focus {
+  border-color: #2E7D32;
+}
+
+/* Responsive para el modal de edición */
+@media (max-width: 600px) {
+  .Modal_Grid_Perfil {
+    grid-template-columns: 1fr;
+  }
+  
+  .Modal_Card_Perfil.Modal_Grande {
+    max-height: 85vh;
+    padding: 20px 18px 28px;
+  }
+}/
+* ── Estilos para selectores en modal ──────────────────────────────────── */
+.Modal_Select_Perfil {
+  width: 100%;
+  background: rgba(200,230,201,0.35);
+  border: 1.5px solid #C8E6C9;
+  border-radius: 30px;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+  color: #333;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  margin-bottom: 14px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px;
+  padding-right: 45px;
+}
+
+.Modal_Select_Perfil:focus {
+  border-color: #2E7D32;
+}
+
+.Modal_Select_Perfil:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background-color: rgba(200,230,201,0.2);
+}
+
+.Modal_Select_Perfil option {
+  background: #fff;
+  color: #333;
+  padding: 8px;
+}

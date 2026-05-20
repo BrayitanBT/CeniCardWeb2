@@ -1,0 +1,197 @@
+.Admin_Historial {
+  display: flex;
+  background-color: #f6f8f1;
+  min-height: 100vh;
+}
+
+.Contenedor_Historial {
+  flex: 1;
+  margin-left: 260px; 
+  display: flex;
+  flex-direction: column;
+}
+
+.Zona_Trabajo_Historial {
+  padding: 30px 40px;
+}
+
+.Card_Blanca_Historial {
+  background: white;
+  border-radius: 30px;
+  padding: 30px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+  margin-top: 20px;
+}
+
+.Titulo_Tabla_H {
+  text-align: center;
+  font-size: 1.6rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.Contenedor_Buscador_H {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.Barra_Busqueda_H {
+  background-color: #f2f2f2;
+  border-radius: 12px;
+  padding: 8px 20px;
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+}
+
+.Barra_Busqueda_H input {
+  background: transparent;
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  width: 100%;
+  color: #888;
+}
+
+.Tabla_Scroll_H {
+  overflow-x: auto;
+}
+
+.Tabla_Datos_H {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.Tabla_Datos_H th {
+  color: #bbb;
+  font-weight: 500;
+  padding: 12px 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.Tabla_Datos_H td {
+  padding: 12px 8px;
+  text-align: center;
+  color: #555;
+  border-bottom: 1px solid #f9f9f9;
+}
+
+.Tag_H {
+  background: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.Punto_Estado {
+  color: #72c675;
+  font-weight: 600;
+}
+
+.Hora_H {
+  background: #eee;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+}
+
+.Btn_Lib_H {
+  background: #e0e0e0;
+  color: #aaa;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+}
+
+.Btn_Lib_H.activo {
+  background: #002b3d;
+  color: white;
+}
+
+.Footer_Tabla_H {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.Btn_Editar_H {
+  background-color: #55a67a;
+  color: white;
+  border: none;
+  padding: 10px 40px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+/* Estados del equipo */
+.Punto_Estado.disponible {
+  color: #28a745;
+}
+
+.Punto_Estado.no_disponible {
+  color: #dc3545;
+}
+
+.Punto_Estado.ocupado {
+  color: #ffc107;
+}
+
+/* Estados del préstamo */
+.Tag_H.aceptado {
+  background-color: #28a745;
+  color: white;
+}
+
+.Tag_H.rechazado {
+  background-color: #dc3545;
+  color: white;
+}
+
+.Tag_H.devuelto {
+  background-color: #6c757d;
+  color: white;
+}
+
+/* Botón liberar deshabilitado */
+.Btn_Lib_H:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animación de carga */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+tbody tr td[colspan="10"] {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Tooltip para botones */
+.Btn_Lib_H {
+  position: relative;
+}
+
+.Btn_Lib_H:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+}
