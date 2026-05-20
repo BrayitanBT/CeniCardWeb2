@@ -46,21 +46,220 @@
 }
 
 .Btn_Historial {
-  background: transparent;
-  border: 2px solid var(--color-text-primary);
-  padding: var(--space-3) var(--space-6);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border: none;
+  padding: var(--space-3) var(--space-8);
   border-radius: var(--radius-full);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-bold);
   cursor: pointer;
   text-decoration: none;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  color: white;
   transition: all var(--transition-fast);
+  box-shadow: 0 4px 15px rgba(0, 120, 50, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .Btn_Historial:hover {
-  background: var(--color-text-primary);
-  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Historial:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
+  filter: brightness(1.1);
+}
+
+.Btn_Historial:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
 }
 
 .Btn_Añadir_Solicitud {

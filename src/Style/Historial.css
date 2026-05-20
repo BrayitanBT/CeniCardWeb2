@@ -1,18 +1,65 @@
-.Admin_Historial {
-  display: flex;
-  background: var(--color-bg);
-  min-height: 100vh;
-}
-
-.Contenedor_Historial {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-}
-
 .Zona_Trabajo_Historial {
   padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.Header_Historial {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.Header_Info_Historial h2 {
+  margin: 0;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.Header_Info_Historial p {
+  margin: var(--space-2) 0 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.Header_Acciones_Historial {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.Btn_PDF_Historial {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.Btn_PDF_Historial:hover:not(:disabled) {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.Btn_PDF_Historial:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.Icono_PDF {
+  font-size: 1.2rem;
 }
 
 .Card_Blanca_Historial {
@@ -20,22 +67,21 @@
   border-radius: var(--radius-xl);
   padding: var(--space-8);
   box-shadow: var(--shadow-sm);
-  margin-top: var(--space-5);
   border: 1px solid var(--color-border-light);
 }
 
-.Titulo_Tabla_H {
-  text-align: center;
-  font-size: var(--font-size-2xl);
-  margin-bottom: var(--space-5);
-  color: var(--color-text-primary);
-  font-weight: var(--font-weight-semibold);
+.Filtros_Historial {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
 }
 
 .Contenedor_Buscador_H {
-  display: flex;
-  justify-content: center;
-  margin-bottom: var(--space-6);
+  flex: 1;
+  min-width: 250px;
 }
 
 .Barra_Busqueda_H {
@@ -43,7 +89,6 @@
   border-radius: var(--radius-full);
   padding: var(--space-3) var(--space-5);
   width: 100%;
-  max-width: 450px;
   display: flex;
   align-items: center;
   border: 1px solid var(--color-border-light);
@@ -69,6 +114,28 @@
   color: var(--color-text-muted);
 }
 
+.Lupa_H {
+  font-size: 1rem;
+}
+
+.Select_Filtro_Historial {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-light);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+  min-width: 160px;
+}
+
+.Select_Filtro_Historial:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
 .Tabla_Scroll_H {
   overflow-x: auto;
 }
@@ -77,7 +144,7 @@
   width: 100%;
   border-collapse: collapse;
   font-size: var(--font-size-sm);
-  min-width: 800px;
+  min-width: 900px;
 }
 
 .Tabla_Datos_H th {
@@ -88,6 +155,16 @@
   font-size: var(--font-size-xs);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.Tabla_Datos_H th:first-child {
+  text-align: left;
+  padding-left: var(--space-4);
+}
+
+.Tabla_Datos_H th:last-child {
+  padding-right: var(--space-4);
 }
 
 .Tabla_Datos_H td {
@@ -95,6 +172,16 @@
   text-align: center;
   color: var(--color-text-primary);
   border-bottom: 1px solid var(--color-border-light);
+  vertical-align: middle;
+}
+
+.Tabla_Datos_H td:first-child {
+  text-align: left;
+  padding-left: var(--space-4);
+}
+
+.Tabla_Datos_H td:last-child {
+  padding-right: var(--space-4);
 }
 
 .Tabla_Datos_H tbody tr:hover {
@@ -105,7 +192,7 @@
   background: var(--color-bg);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   font-weight: var(--font-weight-medium);
   display: inline-block;
@@ -126,78 +213,102 @@
   color: #6b7280;
 }
 
-.Punto_Estado {
-  font-weight: var(--font-weight-semibold);
-}
-
-.Punto_Estado.disponible {
-  color: var(--color-success);
-}
-
-.Punto_Estado.no_disponible {
-  color: var(--color-error);
-}
-
-.Punto_Estado.ocupado {
-  color: var(--color-warning);
-}
-
-.Hora_H {
-  background: var(--color-bg);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: 0.7rem;
-  color: var(--color-text-secondary);
-  display: inline-block;
-}
-
 .Btn_Lib_H {
-  background: var(--color-bg);
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  padding: var(--space-2) var(--space-4);
-  border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary-200);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
   cursor: pointer;
   transition: all var(--transition-fast);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  box-shadow: var(--shadow-xs);
+}
+
+.Btn_Lib_H::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  transition: background var(--transition-fast);
 }
 
 .Btn_Lib_H.activo {
   background: var(--color-primary);
   color: white;
   border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+}
+
+.Btn_Lib_H.activo::before {
+  background: white;
 }
 
 .Btn_Lib_H.activo:hover {
   background: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 120, 50, 0.4);
 }
 
 .Btn_Lib_H:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .Footer_Tabla_H {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
   margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg);
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
-.Btn_Editar_H {
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  padding: var(--space-3) var(--space-10);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-semibold);
-  cursor: pointer;
-  transition: all var(--transition-fast);
+.Footer_Tabla_H > span:first-child {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 }
 
-.Btn_Editar_H:hover {
-  background: var(--color-primary-dark);
-  transform: translateY(-1px);
+.Estadisticas_Footer_H {
+  display: flex;
+  gap: var(--space-5);
+}
+
+.Stat_H {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.Dot_H {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.Dot_H.aceptado {
+  background: var(--color-success);
+}
+
+.Dot_H.devuelto {
+  background: #6b7280;
+}
+
+.Dot_H.rechazado {
+  background: var(--color-error);
 }
 
 @keyframes pulse {
@@ -220,7 +331,7 @@ tbody tr td[colspan="10"] {
     padding: var(--space-6);
   }
 
-  .Titulo_Tabla_H {
+  .Header_Info_Historial h2 {
     font-size: var(--font-size-xl);
   }
 }
@@ -231,18 +342,35 @@ tbody tr td[colspan="10"] {
     padding: var(--space-4);
   }
 
+  .Header_Historial {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .Header_Acciones_Historial {
+    width: 100%;
+  }
+
+  .Btn_PDF_Historial {
+    width: 100%;
+    justify-content: center;
+  }
+
   .Card_Blanca_Historial {
     padding: var(--space-4);
     border-radius: var(--radius-lg);
   }
 
-  .Titulo_Tabla_H {
-    font-size: var(--font-size-lg);
-    margin-bottom: var(--space-4);
+  .Filtros_Historial {
+    flex-direction: column;
   }
 
-  .Barra_Busqueda_H {
-    max-width: 100%;
+  .Contenedor_Buscador_H {
+    width: 100%;
+  }
+
+  .Select_Filtro_Historial {
+    width: 100%;
   }
 
   .Tabla_Datos_H {
@@ -250,12 +378,13 @@ tbody tr td[colspan="10"] {
   }
 
   .Footer_Tabla_H {
-    margin-top: var(--space-4);
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .Btn_Editar_H {
-    padding: var(--space-2) var(--space-6);
-    font-size: var(--font-size-sm);
+  .Estadisticas_Footer_H {
+    flex-direction: column;
+    gap: var(--space-2);
   }
 }
 
@@ -269,8 +398,8 @@ tbody tr td[colspan="10"] {
     padding: var(--space-3);
   }
 
-  .Titulo_Tabla_H {
-    font-size: var(--font-size-base);
+  .Header_Info_Historial h2 {
+    font-size: var(--font-size-lg);
   }
 
   .Barra_Busqueda_H {
