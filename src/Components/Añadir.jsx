@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import MenuLateral from './Menu.jsx';
-import Header from './Header.jsx';
-import { getPrestamos, devolverEquipo } from '../services/tasks';
+import Layout from './Layout';
+import { getPrestamos, devolverEquipo } from '../services/prestamoService';
 import { useAuth } from '../Context/AuthContext';
 import Swal from 'sweetalert2';
 import '../Style/Añadir.css';
@@ -98,13 +97,8 @@ function Añadir() {
   };
 
   return (
-    <div className="Admin_Añadir">
-      <MenuLateral />
-
-      <div className="Contenedor_Añadir">
-        <Header />
-
-        <div className="Zona_Trabajo_Añadir">
+    <Layout>
+      <div className="Zona_Trabajo_Añadir">
           <header className="Texto_Principal">
             <h2>Equipos entregados</h2>
             <p>Gestiona los equipos que están actualmente en préstamo y procesa las devoluciones.</p>
@@ -229,8 +223,7 @@ function Añadir() {
             )}
           </section>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

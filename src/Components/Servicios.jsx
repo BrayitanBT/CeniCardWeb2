@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import MenuLateral from './Menu.jsx';
-import Header from './Header.jsx';
+import Layout from './Layout';
 import { 
   getNoticias, 
   createNoticia, 
-  updateNoticia, 
-  deleteNoticia,
+  deleteNoticia
+} from '../services/noticiaService';
+import {
   getEquipos,
   createEquipo,
-  updateEquipo,
   deleteEquipo,
   getCategoriasEquipos
-} from '../services/tasks';
+} from '../services/equipoService';
 import { useAuth } from '../Context/AuthContext';
 import Swal from 'sweetalert2';
 import '../Style/Servicios.css';
@@ -29,7 +28,6 @@ function Servicios() {
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
 
-  // Estados para formularios
   const [formNoticia, setFormNoticia] = useState({
     titulo: '',
     descripcion: '',
@@ -70,7 +68,6 @@ function Servicios() {
     }
   };
 
-  // Filtrar noticias
   const noticiasFiltradas = noticias.filter(noticia => {
     const searchMatch = searchNoticiaTerm === '' ||
       noticia.titulo?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
@@ -80,7 +77,6 @@ function Servicios() {
     return searchMatch;
   });
 
-  // Filtrar equipos
   const equiposFiltrados = equipos.filter(equipo => {
     const searchMatch = searchEquipoTerm === '' || 
       equipo.numero.toString().includes(searchEquipoTerm) ||
@@ -204,19 +200,6 @@ function Servicios() {
     }
   };
 
-  const getEstadoBadgeClass = (estado) => {
-    switch (estado) {
-      case 'disponible':
-        return 'Tag_Estado green';
-      case 'no_disponible':
-        return 'Tag_Estado orange';
-      case 'ocupado':
-        return 'Tag_Estado red';
-      default:
-        return 'Tag_Estado';
-    }
-  };
-
   const getEstadoTexto = (estado) => {
     switch (estado) {
       case 'disponible':
@@ -239,185 +222,176 @@ function Servicios() {
   };
 
   return (
-    <div className="Admin_Servicios">
-      <MenuLateral />
+    <Layout>
+      <div className="Area_Trabajo_Main">
+        <div className="Header_Seccion">
+          <div className="Texto_Header">
+            <h2>Administrador de material de aprendizaje</h2>
+            <p>Gestione préstamos y agregue material de trabajo u entretenimiento.</p>
+          </div>
+        </div>
 
-      <div className="Contenedor_Servicios">
-        <Header />
-        
-        <div className="Area_Trabajo_Main">
-          <div className="Header_Seccion">
-            <div className="Texto_Header">
-              <h2>Administrador de material de aprendizaje</h2>
-              <p>Gestione préstamos y agregue material de trabajo u entretenimiento.</p>
+        <div className="Panel_Dual">
+          <div className="Columna_Noticias">
+            <div className="Fila_Titulo">
+              <h3>Noticias</h3>
+              <button className="Btn_Añadir" onClick={() => setModalNoticia(true)}>+ Añadir</button>
+            </div>
+
+            <div className="Barra_Busqueda_Columna">
+              <span className="Lupa">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Buscar noticias..." 
+                className="Input_Busqueda_Columna"
+                value={searchNoticiaTerm}
+                onChange={(e) => setSearchNoticiaTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="Lista_Items">
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  Cargando noticias...
+                </div>
+              ) : noticiasFiltradas.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                  No se encontraron noticias
+                </div>
+              ) : (
+                noticiasFiltradas.map((noticia) => (
+                  <div className="Card_Noticia" key={noticia.id}>
+                    <div className="Icono_Noticia_Container">📰</div>
+                    <div className="Info_Noticia">
+                      <span className="Tag_Verde">
+                        {noticia.publicado ? 'Publicado' : 'Borrador'}
+                      </span>
+                      <h4>{noticia.titulo}</h4>
+                      <p>{noticia.descripcion}</p>
+                      <small style={{ color: '#666' }}>
+                        {formatearFecha(noticia.created_at)} - {noticia.autor_nombre || 'Sistema'}
+                      </small>
+                      <div style={{ marginTop: '10px' }}>
+                        <button 
+                          onClick={() => handleDeleteNoticia(noticia.id)}
+                          style={{
+                            background: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
-          <div className="Panel_Dual">
-            {/* --- COLUMNA NOTICIAS --- */}
-            <div className="Columna_Noticias">
-              <div className="Fila_Titulo">
-                <h3>Noticias</h3>
-                <button className="Btn_Añadir" onClick={() => setModalNoticia(true)}>+ Añadir</button>
-              </div>
-
-              <div className="Barra_Busqueda_Columna">
-                <span className="Lupa">🔍</span>
-                <input 
-                  type="text" 
-                  placeholder="Buscar noticias..." 
-                  className="Input_Busqueda_Columna"
-                  value={searchNoticiaTerm}
-                  onChange={(e) => setSearchNoticiaTerm(e.target.value)}
-                />
-              </div>
-
-              <div className="Lista_Items">
-                {loading ? (
-                  <div style={{ textAlign: 'center', padding: '20px' }}>
-                    Cargando noticias...
-                  </div>
-                ) : noticiasFiltradas.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                    No se encontraron noticias
-                  </div>
-                ) : (
-                  noticiasFiltradas.map((noticia) => (
-                    <div className="Card_Noticia" key={noticia.id}>
-                      <div className="Icono_Noticia_Container">📰</div>
-                      <div className="Info_Noticia">
-                        <span className="Tag_Verde">
-                          {noticia.publicado ? 'Publicado' : 'Borrador'}
-                        </span>
-                        <h4>{noticia.titulo}</h4>
-                        <p>{noticia.descripcion}</p>
-                        <small style={{ color: '#666' }}>
-                          {formatearFecha(noticia.created_at)} - {noticia.autor_nombre || 'Sistema'}
-                        </small>
-                        <div style={{ marginTop: '10px' }}>
-                          <button 
-                            onClick={() => handleDeleteNoticia(noticia.id)}
-                            style={{
-                              background: '#dc3545',
-                              color: 'white',
-                              border: 'none',
-                              padding: '5px 10px',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            Eliminar
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+          <div className="Columna_Recursos">
+            <div className="Fila_Titulo">
+              <h3>Equipos</h3>
+              <button className="Btn_Añadir" onClick={() => setModalRecurso(true)}>+ Añadir</button>
             </div>
 
-            {/* --- COLUMNA EQUIPOS --- */}
-            <div className="Columna_Recursos">
-              <div className="Fila_Titulo">
-                <h3>Equipos</h3>
-                <button className="Btn_Añadir" onClick={() => setModalRecurso(true)}>+ Añadir</button>
-              </div>
+            <div className="Barra_Busqueda_Columna">
+              <span className="Lupa">🔍</span>
+              <input 
+                type="text" 
+                placeholder="Buscar equipos por número, marca, modelo o serial..." 
+                className="Input_Busqueda_Columna"
+                value={searchEquipoTerm}
+                onChange={(e) => setSearchEquipoTerm(e.target.value)}
+              />
+            </div>
+            
+            <div className="Filtros_Simulados">
+              <select 
+                className="Select_Filtro"
+                value={filtroCategoria}
+                onChange={(e) => setFiltroCategoria(e.target.value)}
+              >
+                <option value="">Todas las categorías</option>
+                {categorias.map(categoria => (
+                  <option key={categoria.id} value={categoria.id}>
+                    {categoria.nombre}
+                  </option>
+                ))}
+              </select>
 
-              <div className="Barra_Busqueda_Columna">
-                <span className="Lupa">🔍</span>
-                <input 
-                  type="text" 
-                  placeholder="Buscar equipos por número, marca, modelo o serial..." 
-                  className="Input_Busqueda_Columna"
-                  value={searchEquipoTerm}
-                  onChange={(e) => setSearchEquipoTerm(e.target.value)}
-                />
-              </div>
-              
-              <div className="Filtros_Simulados">
-                <select 
-                  className="Select_Filtro"
-                  value={filtroCategoria}
-                  onChange={(e) => setFiltroCategoria(e.target.value)}
-                >
-                  <option value="">Todas las categorías</option>
-                  {categorias.map(categoria => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.nombre}
-                    </option>
-                  ))}
-                </select>
+              <select 
+                className="Select_Filtro"
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
+              >
+                <option value="">Todos los estados</option>
+                <option value="disponible">Disponible</option>
+                <option value="no_disponible">No disponible</option>
+                <option value="ocupado">Ocupado</option>
+              </select>
+            </div>
 
-                <select 
-                  className="Select_Filtro"
-                  value={filtroEstado}
-                  onChange={(e) => setFiltroEstado(e.target.value)}
-                >
-                  <option value="">Todos los estados</option>
-                  <option value="disponible">Disponible</option>
-                  <option value="no_disponible">No disponible</option>
-                  <option value="ocupado">Ocupado</option>
-                </select>
-              </div>
-
-              <div className="Lista_Items">
-                {loading ? (
-                  <div style={{ textAlign: 'center', padding: '20px' }}>
-                    Cargando equipos...
-                  </div>
-                ) : equiposFiltrados.length === 0 ? (
-                  <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
-                    No se encontraron equipos
-                  </div>
-                ) : (
-                  equiposFiltrados.map((equipo) => (
-                    <div className="Card_Recurso" key={equipo.id}>
-                      <div className="Icono_Recurso_Container">
-                        <span>{equipo.categorias_equipos?.icono || '💻'}</span>
-                        <strong>{equipo.numero}</strong>
+            <div className="Lista_Items">
+              {loading ? (
+                <div style={{ textAlign: 'center', padding: '20px' }}>
+                  Cargando equipos...
+                </div>
+              ) : equiposFiltrados.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                  No se encontraron equipos
+                </div>
+              ) : (
+                equiposFiltrados.map((equipo) => (
+                  <div className="Card_Recurso" key={equipo.id}>
+                    <div className="Icono_Recurso_Container">
+                      <span>{equipo.categorias_equipos?.icono || '💻'}</span>
+                      <strong>{equipo.numero}</strong>
+                    </div>
+                    <div className="Detalle_Recurso">
+                      <div className="Top_Recurso">
+                        <h4>{equipo.marca} {equipo.modelo}</h4>
+                        <span className="Tag_Verde_Min">
+                          {equipo.categorias_equipos?.nombre || 'Sin categoría'}
+                        </span>
                       </div>
-                      <div className="Detalle_Recurso">
-                        <div className="Top_Recurso">
-                          <h4>{equipo.marca} {equipo.modelo}</h4>
-                          <span className="Tag_Verde_Min">
-                            {equipo.categorias_equipos?.nombre || 'Sin categoría'}
-                          </span>
-                        </div>
-                        <p><strong>Serial:</strong> {equipo.serial || 'N/A'}</p>
-                        <p>{equipo.descripcion || 'Sin descripción'}</p>
-                        <div className="Recurso_Estado_Tag_Cont">
-                          <span className={getEstadoBadgeClass(equipo.estado)}>
-                            {getEstadoTexto(equipo.estado)}
-                          </span>
-                        </div>
-                        <div style={{ marginTop: '10px' }}>
-                          <button 
-                            onClick={() => handleDeleteEquipo(equipo.id)}
-                            style={{
-                              background: '#dc3545',
-                              color: 'white',
-                              border: 'none',
-                              padding: '5px 10px',
-                              borderRadius: '4px',
-                              cursor: 'pointer',
-                              fontSize: '12px'
-                            }}
-                          >
-                            Eliminar
-                          </button>
-                        </div>
+                      <p><strong>Serial:</strong> {equipo.serial || 'N/A'}</p>
+                      <p>{equipo.descripcion || 'Sin descripción'}</p>
+                      <div className="Recurso_Estado_Tag_Cont">
+                        <span className={`Tag_Estado ${equipo.estado === 'disponible' ? 'green' : equipo.estado === 'no_disponible' ? 'orange' : 'red'}`}>
+                          {getEstadoTexto(equipo.estado)}
+                        </span>
+                      </div>
+                      <div style={{ marginTop: '10px' }}>
+                        <button 
+                          onClick={() => handleDeleteEquipo(equipo.id)}
+                          style={{
+                            background: '#dc3545',
+                            color: 'white',
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Eliminar
+                        </button>
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* --- MODAL DE AÑADIR NOTICIA --- */}
       {modalNoticia && (
         <div className="Overlay_Modal">
           <div className="Contenedor_Modal_Añadir">
@@ -469,7 +443,6 @@ function Servicios() {
         </div>
       )}
 
-      {/* --- MODAL DE AÑADIR EQUIPO --- */}
       {modalRecurso && (
         <div className="Overlay_Modal">
           <div className="Contenedor_Modal_Recurso">
@@ -569,7 +542,7 @@ function Servicios() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }
 

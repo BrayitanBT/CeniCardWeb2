@@ -1,222 +1,269 @@
-.Admin_Solicitudes { 
-    display: flex; 
-    width: 100%; 
-    min-height: 100vh; 
-    background-color: #f9fbf7; 
+.Admin_Solicitudes {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background: var(--color-bg);
 }
 
-.Contenedor_Solicitudes { 
-    flex: 1; 
-    margin-left: 250px; 
-    display: flex; 
-    flex-direction: column; 
-    width: calc(100% - 250px); 
+.Contenedor_Solicitudes {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
-.Zona_Trabajo_Solicitudes { 
-    padding: 30px; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 20px; 
+.Zona_Trabajo_Solicitudes {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
 }
 
-.Header_Seccion_Solicitudes { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: flex-start; 
-    margin-bottom: 10px; 
+.Header_Seccion_Solicitudes {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
-.Texto_Header h2 { 
-    color: #333; 
-    font-size: 1.8rem; 
-    margin-bottom: 5px; 
+.Texto_Header h2 {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-1);
+  font-weight: var(--font-weight-semibold);
 }
 
-.Texto_Header p { 
-    color: #777; 
-    font-size: 0.95rem; 
+.Texto_Header p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
 }
 
-.Acciones_Header { 
-    display: flex; 
-    gap: 15px; 
+.Acciones_Header {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
 }
 
 .Btn_Historial {
-    background: transparent;
-    border: 2px solid #000000;
-    padding: 10px 30px;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none
+  background: transparent;
+  border: 2px solid var(--color-text-primary);
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  transition: all var(--transition-fast);
+}
+
+.Btn_Historial:hover {
+  background: var(--color-text-primary);
+  color: white;
 }
 
 .Btn_Añadir_Solicitud {
-    background: #05924e;
-    color: white;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 40px;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
 }
 
+.Btn_Añadir_Solicitud:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
 
 .Barra_Filtros_Solicitudes {
-    background: white;
-    padding: 15px 30px;
-    border-radius: 60px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02);
-    border: 1px solid #ececec;
+  background: var(--color-surface);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border-light);
+  flex-wrap: wrap;
+  gap: var(--space-4);
 }
 
 .Input_Busqueda_S {
-    background: #f1f3f4;
-    padding: 10px 25px;
-    border-radius: 40px;
-    width: 40%;
-    display: flex;
-    gap: 10px;
+  background: var(--color-bg);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  min-width: 250px;
+  flex: 1;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  border: 1px solid var(--color-border-light);
+  transition: all var(--transition-fast);
 }
 
-.Input_Busqueda_S input { 
-    border: none; 
-    background: transparent; 
-    outline: none; 
-    width: 100%; 
+.Input_Busqueda_S:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
 }
 
-.Grupo_Selects { 
-    display: flex; 
-    gap: 10px; 
+.Input_Busqueda_S input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
 }
 
-.Select_S { 
-    background: #f1f3f4; 
-    border: none; 
-    padding: 10px 20px; 
-    border-radius: 15px; 
-    color: #777; 
-    font-size: 0.9rem; 
+.Input_Busqueda_S input::placeholder {
+  color: var(--color-text-muted);
 }
 
-.Contenedor_Tabla_Solicitudes { 
-    background: white; 
-    border-radius: 40px; 
-    padding: 20px; 
-    border: 1px solid #ececec; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+.Grupo_Selects {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.Select_S {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-light);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  outline: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.Select_S:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-50);
+}
+
+.Contenedor_Tabla_Solicitudes {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
 }
 
 .Tabla_Solicitudes {
-    width: 100%; 
-    border-collapse: collapse; 
-    text-align: center; 
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+  min-width: 700px;
 }
 
-.Tabla_Solicitudes th { 
-    padding: 20px; 
-    color: #99a1a8; 
-    font-weight: 500; 
-    font-size: 0.85rem; 
-    border-bottom: 1px solid #f8f9fa; 
+.Tabla_Solicitudes th {
+  padding: var(--space-4) var(--space-3);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--color-border-light);
 }
 
-.Tabla_Solicitudes td { 
-    padding: 18px; 
-    border-bottom: 1px solid #f8f9fa; 
-    font-size: 0.9rem; 
-    color: #333; 
-    font-weight: 500;
+.Tabla_Solicitudes td {
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-border-light);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
 }
 
+.Tabla_Solicitudes tbody tr:hover {
+  background: var(--color-primary-50);
+}
 
-.Celda_Acciones { 
-    display: flex; 
-    gap: 10px; 
-    justify-content: center; 
+.Celda_Acciones {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
 }
 
 .Btn_Check {
-    background: #05924e;
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.Btn_Check:hover {
+  background: var(--color-success);
+  transform: scale(1.1);
 }
 
 .Btn_Close {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
-
-
-/* Estados de los préstamos */
-.Estado_Punto.pendiente {
-  color: #ffc107;
-}
-
-.Estado_Punto.pendiente::before {
-  background-color: #ffc107;
-}
-
-.Estado_Punto.aceptado {
-  color: #28a745;
-}
-
-.Estado_Punto.aceptado::before {
-  background-color: #28a745;
-}
-
-.Estado_Punto.rechazado {
-  color: #dc3545;
-}
-
-.Estado_Punto.rechazado::before {
-  background-color: #dc3545;
-}
-
-.Estado_Punto.devuelto {
-  color: #6c757d;
-}
-
-.Estado_Punto.devuelto::before {
-  background-color: #6c757d;
-}
-
-/* Hover effects para botones */
-.Btn_Check:hover {
-  background-color: #28a745;
-  transform: scale(1.05);
+  background: var(--color-error);
+  color: white;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
 }
 
 .Btn_Close:hover {
-  background-color: #dc3545;
-  transform: scale(1.05);
+  background: #b91c1c;
+  transform: scale(1.1);
 }
 
-/* Animación de carga */
+.Estado_Punto.pendiente {
+  color: var(--color-warning);
+}
+
+.Estado_Punto.pendiente::before {
+  background: var(--color-warning);
+}
+
+.Estado_Punto.aceptado {
+  color: var(--color-success);
+}
+
+.Estado_Punto.aceptado::before {
+  background: var(--color-success);
+}
+
+.Estado_Punto.rechazado {
+  color: var(--color-error);
+}
+
+.Estado_Punto.rechazado::before {
+  background: var(--color-error);
+}
+
+.Estado_Punto.devuelto {
+  color: var(--color-text-muted);
+}
+
+.Estado_Punto.devuelto::before {
+  background: var(--color-text-muted);
+}
+
 @keyframes pulse {
   0% { opacity: 0.6; }
   50% { opacity: 1; }
@@ -225,4 +272,96 @@
 
 tbody tr td[colspan="7"] {
   animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .Zona_Trabajo_Solicitudes {
+    padding: var(--space-5);
+  }
+
+  .Texto_Header h2 {
+    font-size: var(--font-size-xl);
+  }
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+  .Zona_Trabajo_Solicitudes {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .Header_Seccion_Solicitudes {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .Texto_Header h2 {
+    font-size: var(--font-size-lg);
+  }
+
+  .Acciones_Header {
+    width: 100%;
+  }
+
+  .Btn_Historial,
+  .Btn_Añadir_Solicitud {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .Barra_Filtros_Solicitudes {
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  .Input_Busqueda_S {
+    width: 100%;
+    min-width: auto;
+  }
+
+  .Grupo_Selects {
+    width: 100%;
+  }
+
+  .Select_S {
+    flex: 1;
+  }
+
+  .Contenedor_Tabla_Solicitudes {
+    padding: var(--space-4);
+    border-radius: var(--radius-lg);
+  }
+
+  .Tabla_Solicitudes {
+    min-width: 600px;
+  }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+  .Zona_Trabajo_Solicitudes {
+    padding: var(--space-3);
+  }
+
+  .Texto_Header h2 {
+    font-size: var(--font-size-base);
+  }
+
+  .Btn_Historial,
+  .Btn_Añadir_Solicitud {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+
+  .Barra_Filtros_Solicitudes {
+    padding: var(--space-3);
+  }
+
+  .Contenedor_Tabla_Solicitudes {
+    padding: var(--space-3);
+  }
 }

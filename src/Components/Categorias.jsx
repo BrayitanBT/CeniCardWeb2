@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import MenuLateral from './Menu.jsx';
-import Header from './Header.jsx';
+import Layout from './Layout';
 import { 
   getCategoriasEquipos, 
   createCategoria, 
   updateCategoria, 
   deleteCategoria 
-} from '../services/tasks';
+} from '../services/equipoService';
 import Swal from 'sweetalert2';
 import '../Style/Usuarios.css'; // Reutilizamos estilos similares
 
@@ -144,13 +143,8 @@ function Categorias() {
   };
 
   return (
-    <div className="Admin_Usuarios">
-      <MenuLateral />
-
-      <div className="Contenedor_Usuarios">
-        <Header />
-        
-        <div className="Zona_Trabajo_Usuario">
+    <Layout>
+      <div className="Zona_Trabajo_Usuario">
           <div className="Header_Seccion">
             <h2>Administrador de categorías</h2>
             <button 
@@ -272,7 +266,6 @@ function Categorias() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Modal para agregar categoría */}
       {modalAgregar && (
@@ -407,7 +400,7 @@ function Categorias() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }
 

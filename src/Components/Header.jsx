@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
-import { cerrarSesion, obtenerPerfilUsuario } from '../services/tasks';
+import { cerrarSesion, obtenerPerfilUsuario } from '../services/authService';
 import Swal from 'sweetalert2';
 import "../Style/Header.css";
-import { FaBell, FaSignOutAlt } from 'react-icons/fa';
+import { FaBell, FaSignOutAlt, FaBars } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
-function Header() {
+function Header({ onToggleSidebar }) {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [perfil, setPerfil] = useState(null);
@@ -76,6 +76,14 @@ function Header() {
 
   return (
     <header className="Header_Cenicard">
+      <button 
+        className="Header_Toggle" 
+        onClick={onToggleSidebar}
+        aria-label="Toggle sidebar"
+      >
+        <FaBars />
+      </button>
+
       <div className="Header_Grupo_Iconos">
         <div className="Notificaciones">
           <FaBell className="Icono_Campana" />
@@ -97,14 +105,7 @@ function Header() {
             {perfil?.foto_url ? (
               <img src={perfil.foto_url} alt="Perfil" className="Avatar_Usuario" />
             ) : (
-              <div className="Avatar_Usuario" style={{
-                backgroundColor: '#007bff',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontWeight: 'bold'
-              }}>
+              <div className="Avatar_Usuario Avatar_Iniciales">
                 {obtenerNombreCompleto().charAt(0).toUpperCase()}
               </div>
             )}
@@ -113,15 +114,6 @@ function Header() {
             onClick={handleLogout}
             className="Btn_Logout"
             title="Cerrar sesión"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#666',
-              fontSize: '18px',
-              cursor: 'pointer',
-              marginLeft: '10px',
-              padding: '5px'
-            }}
           >
             <FaSignOutAlt />
           </button>

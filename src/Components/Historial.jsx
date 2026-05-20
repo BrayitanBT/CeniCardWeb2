@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import MenuLateral from './Menu.jsx';
-import Header from './Header.jsx';
-import { getHistorial, devolverEquipo } from '../services/tasks';
+import Layout from './Layout';
+import { getHistorial } from '../services/historialService';
+import { devolverEquipo } from '../services/prestamoService';
 import { useAuth } from '../Context/AuthContext';
 import Swal from 'sweetalert2';
 import '../Style/Historial.css'; 
@@ -115,13 +115,8 @@ function Historial() {
   };
 
   return (
-    <div className="Admin_Historial">
-      <MenuLateral />
-
-      <div className="Contenedor_Historial">
-        <Header />
-
-        <div className="Zona_Trabajo_Historial">
+    <Layout>
+      <div className="Zona_Trabajo_Historial">
           <header className="Header_Texto_Historial">
             <h2>Historial de préstamos</h2>
             <p>Consulta el historial completo de préstamos y devoluciones.</p>
@@ -285,8 +280,7 @@ function Historial() {
             )}
           </section>
         </div>
-      </div>
-    </div>
+    </Layout>
   );
 }
 

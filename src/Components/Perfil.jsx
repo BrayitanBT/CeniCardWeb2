@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import MenuLateral from './Menu.jsx';
-import Header from './Header.jsx';
+import Layout from './Layout';
 import { useAuth } from '../Context/AuthContext';
-import { obtenerPerfilUsuario, actualizarPerfilUsuario } from '../services/tasks';
+import { obtenerPerfilUsuario } from '../services/authService';
 import { supabase } from '../supabaseClient';
 import Swal from 'sweetalert2';
 import '../Style/Perfil.css';
@@ -321,16 +320,12 @@ function Perfil() {
   };
 
   if (loading) return (
-    <div className="Admin_Perfil">
-      <MenuLateral />
-      <div className="Contenedor_Perfil">
-        <Header />
-        <div className="Perfil_Loading">
-          <div className="Perfil_Spinner"></div>
-          <p>Cargando perfil...</p>
-        </div>
+    <Layout>
+      <div className="Perfil_Loading">
+        <div className="Perfil_Spinner"></div>
+        <p>Cargando perfil...</p>
       </div>
-    </div>
+    </Layout>
   );
 
   const nombreCompleto = [
@@ -441,11 +436,8 @@ function Perfil() {
   );
 
   return (
-    <div className="Admin_Perfil">
-      <MenuLateral />
-      <div className="Contenedor_Perfil">
-        <Header />
-        <div className="Perfil_Zona_Trabajo">
+    <Layout>
+      <div className="Perfil_Zona_Trabajo">
           {/* ── Panel izquierdo: Carnet ── */}
           <div className="Perfil_Panel_Carnet">
             <div className="Perfil_Carnet_Titulo">
@@ -565,7 +557,6 @@ function Perfil() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Modal: cambiar estado */}
       {modalEstado && (
@@ -858,7 +849,7 @@ function Perfil() {
           </div>
         </div>
       )}
-    </div>
+    </Layout>
   );
 }
 

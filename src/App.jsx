@@ -17,19 +17,21 @@ import { ProtectedRoute } from './Components/ProtectedRoute.jsx'
 // Componente para agrupar rutas protegidas
 function ProtectedRoutes() {
   return (
-    <Routes>
-      <Route path='/Principal' element={<Principal />} />
-      <Route path='/MenuLateral' element={<MenuLateral />} />
-      <Route path='/Header' element={<Header />} />
-      <Route path='/Usuarios' element={<Usuarios />} />
-      <Route path='/Solicitudes' element={<Solicitudes />} />
-      <Route path='/Servicios' element={<Servicios />} />
-      <Route path='/Perfil' element={<Perfil />} />
-      <Route path='/Historial' element={<Historial />} />
-      <Route path='/Añadir' element={<Añadir />} />
-      <Route path='/Categorias' element={<Categorias />} />
-    </Routes>
-  )
+    <div className="main-content">
+      <Routes>
+        <Route path="/Principal" element={<Principal />} />
+        <Route path="/MenuLateral" element={<MenuLateral />} />
+        <Route path="/Header" element={<Header />} />
+        <Route path="/Usuarios" element={<Usuarios />} />
+        <Route path="/Solicitudes" element={<Solicitudes />} />
+        <Route path="/Servicios" element={<Servicios />} />
+        <Route path="/Perfil" element={<Perfil />} />
+        <Route path="/Historial" element={<Historial />} />
+        <Route path="/Añadir" element={<Añadir />} />
+        <Route path="/Categorias" element={<Categorias />} />
+      </Routes>
+    </div>
+  );
 }
 
 function App() {

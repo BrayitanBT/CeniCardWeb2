@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { loginConDocumento, obtenerSesionActual } from "../services/tasks";
+import { loginConDocumento, obtenerSesionActual } from "../services/authService";
 import "../Style/Login.css";
 import PersonaCenicard from "../Img/PersonaCenicard.png";
 
