@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
-import { loginConDocumento, obtenerSesionActual } from "../services/authService";
+import { useAuth } from "../Context/AuthContext";
+import { loginConDocumento } from "../services/authService";
 import "../Style/Login.css";
 import PersonaCenicard from "../Img/PersonaCenicard.png";
 
 function Login() {
   const navigate = useNavigate();
+  const { user, rol, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     documento: "",
     contrasena: ""
@@ -16,19 +18,20 @@ function Login() {
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   useEffect(() => {
-    const verificarSesion = async () => {
-      const sesion = await obtenerSesionActual();
-      if (sesion) {
-        const rol = localStorage.getItem('user_rol') || '';
-        if (rol === 'instructor' || rol === 'contratista') {
-          navigate('/Carnes');
-        } else {
-          navigate('/Principal');
-        }
+    if (!authLoading && user) {
+      if (rol === 'aprendiz') {
+        setError('Los aprendices no tienen acceso al aplicativo. Contacta al administrador.');
+        return;
       }
-    };
-    verificarSesion();
-  }, [navigate]);
+      if (rol === 'instructor' || rol === 'contratista') {
+        navigate('/Carnes', { replace: true });
+      } else if (rol === 'funcionario' || rol === 'admin') {
+        navigate('/Principal', { replace: true });
+      } else {
+        setError('Rol no reconocido. Contacta al administrador.');
+      }
+    }
+  }, [user, rol, authLoading, navigate]);
 
   const handleChange = (e) => {
     const { id, value } = e.target;
@@ -78,13 +81,7 @@ function Login() {
         localStorage.setItem('user_rol', data.perfil?.rol || '');
         localStorage.setItem('user_nombre', data.perfil?.nombre_completo || '');
         
-        const rol = data.perfil?.rol || '';
-        
-        if (rol === 'instructor' || rol === 'contratista') {
-          navigate('/Carnes');
-        } else {
-          navigate('/Principal');
-        }
+        // La navegación la maneja el useEffect cuando user y rol se actualicen
       } else {
         setError("Error al iniciar sesión. No se recibieron datos de sesión.");
       }
@@ -99,7 +96,19 @@ function Login() {
 
   return (
     <div className="Contenedor_Login">
-      <div className="Tarjeta_login">
+      {authLoading ? (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '100vh',
+          color: 'white',
+          fontSize: '18px'
+        }}>
+          Cargando...
+        </div>
+      ) : (
+        <div className="Tarjeta_login">
         <div className="Info_login">
           <h1 className="Titulo">
             <span>CeniCard</span>
@@ -216,6 +225,7 @@ function Login() {
           
         </div>
       </div>
+      )}
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
