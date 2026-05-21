@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { loginConDocumento } from "../services/authService";
+import { supabase } from "../supabaseClient";
 import "../Style/Login.css";
 import PersonaCenicard from "../Img/PersonaCenicard.png";
 
 function Login() {
   const navigate = useNavigate();
-  const { user, rol, loading: authLoading } = useAuth();
+  const { user, rol, setRol, loading: authLoading } = useAuth();
   const [formData, setFormData] = useState({
     documento: "",
     contrasena: ""
@@ -18,9 +19,12 @@ function Login() {
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    if (!authLoading && user && rol) {
       if (rol === 'aprendiz') {
+        localStorage.removeItem('user_rol');
+        localStorage.removeItem('user_nombre');
         setError('Los aprendices no tienen acceso al aplicativo. Contacta al administrador.');
+        supabase.auth.signOut();
         return;
       }
       if (rol === 'instructor' || rol === 'contratista') {
@@ -28,7 +32,10 @@ function Login() {
       } else if (rol === 'funcionario' || rol === 'admin') {
         navigate('/Principal', { replace: true });
       } else {
+        localStorage.removeItem('user_rol');
+        localStorage.removeItem('user_nombre');
         setError('Rol no reconocido. Contacta al administrador.');
+        supabase.auth.signOut();
       }
     }
   }, [user, rol, authLoading, navigate]);
@@ -78,10 +85,28 @@ function Login() {
       }
 
       if (data && data.session) {
-        localStorage.setItem('user_rol', data.perfil?.rol || '');
+        const userRol = data.perfil?.rol || '';
+        localStorage.setItem('user_rol', userRol);
         localStorage.setItem('user_nombre', data.perfil?.nombre_completo || '');
-        
-        // La navegación la maneja el useEffect cuando user y rol se actualicen
+
+        // Navegación inmediata con el rol obtenido del login
+        if (userRol === 'aprendiz') {
+          setError('Los aprendices no tienen acceso al aplicativo. Contacta al administrador.');
+          supabase.auth.signOut();
+          localStorage.removeItem('user_rol');
+          localStorage.removeItem('user_nombre');
+        } else if (userRol === 'instructor' || userRol === 'contratista') {
+          setRol(userRol);
+          navigate('/Carnes', { replace: true });
+        } else if (userRol === 'funcionario' || userRol === 'admin') {
+          setRol(userRol);
+          navigate('/Principal', { replace: true });
+        } else {
+          setError('Rol no reconocido. Contacta al administrador.');
+          supabase.auth.signOut();
+          localStorage.removeItem('user_rol');
+          localStorage.removeItem('user_nombre');
+        }
       } else {
         setError("Error al iniciar sesión. No se recibieron datos de sesión.");
       }

@@ -13,10 +13,9 @@ export async function loginConDocumento(documento, contrasena) {
       return { data: null, error: new Error('Por favor, ingresa tu contraseña.') }
     }
 
+    // Usa RPC con SECURITY DEFINER para evitar recursión infinita de RLS
     const { data: usuario, error: buscarError } = await supabase
-      .from('usuarios')
-      .select('correo, rol, primer_nombre, primer_apellido, estado_carne, activo')
-      .eq('numero_cc', documento.trim())
+      .rpc('get_user_by_documento', { p_documento: documento.trim() })
       .maybeSingle()
 
     if (buscarError) {
