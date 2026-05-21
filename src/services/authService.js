@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient'
 import { formatearNombreCompleto } from './utils'
 
-const ROLES_PERMITIDOS = ['funcionario', 'admin']
+const ROLES_PERMITIDOS = ['funcionario', 'admin', 'instructor', 'contratista']
 
 export async function loginConDocumento(documento, contrasena) {
   try {
@@ -44,7 +44,7 @@ export async function loginConDocumento(documento, contrasena) {
     if (!ROLES_PERMITIDOS.includes(usuario.rol)) {
       return { 
         data: null, 
-        error: new Error('Acceso denegado. Solo funcionarios y administradores pueden acceder al sistema.') 
+        error: new Error('Acceso denegado. Los aprendices no tienen acceso al sistema.') 
       }
     }
 

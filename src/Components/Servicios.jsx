@@ -3,12 +3,14 @@ import Layout from './Layout';
 import { 
   getNoticias, 
   createNoticia, 
-  deleteNoticia
+  deleteNoticia,
+  updateNoticia
 } from '../services/noticiaService';
 import {
   getEquipos,
   createEquipo,
   deleteEquipo,
+  updateEquipo,
   getCategoriasEquipos
 } from '../services/equipoService';
 import { useAuth } from '../Context/AuthContext';
@@ -19,6 +21,10 @@ function Servicios() {
   const { user } = useAuth();
   const [modalRecurso, setModalRecurso] = useState(false);
   const [modalNoticia, setModalNoticia] = useState(false);
+  const [modalEditarNoticia, setModalEditarNoticia] = useState(false);
+  const [modalEditarEquipo, setModalEditarEquipo] = useState(false);
+  const [editandoNoticiaId, setEditandoNoticiaId] = useState(null);
+  const [editandoEquipoId, setEditandoEquipoId] = useState(null);
   const [noticias, setNoticias] = useState([]);
   const [equipos, setEquipos] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -35,6 +41,23 @@ function Servicios() {
   });
 
   const [formEquipo, setFormEquipo] = useState({
+    numero: '',
+    categoria_id: '',
+    marca: '',
+    modelo: '',
+    serial: '',
+    descripcion: '',
+    estado: 'disponible'
+  });
+
+  const [formEditarNoticia, setFormEditarNoticia] = useState({
+    titulo: '',
+    descripcion: '',
+    imagen_url: '',
+    publicado: true
+  });
+
+  const [formEditarEquipo, setFormEditarEquipo] = useState({
     numero: '',
     categoria_id: '',
     marca: '',
@@ -200,6 +223,71 @@ function Servicios() {
     }
   };
 
+  const abrirEditarNoticia = (noticia) => {
+    setEditandoNoticiaId(noticia.id);
+    setFormEditarNoticia({
+      titulo: noticia.titulo || '',
+      descripcion: noticia.descripcion || '',
+      imagen_url: noticia.imagen_url || '',
+      publicado: noticia.publicado !== undefined ? noticia.publicado : true
+    });
+    setModalEditarNoticia(true);
+  };
+
+  const guardarEditarNoticia = async () => {
+    if (!formEditarNoticia.titulo.trim() || !formEditarNoticia.descripcion.trim()) {
+      Swal.fire('Error', 'Título y descripción son requeridos', 'error');
+      return;
+    }
+
+    try {
+      await updateNoticia(editandoNoticiaId, formEditarNoticia);
+      await cargarDatos();
+      setModalEditarNoticia(false);
+      setEditandoNoticiaId(null);
+      Swal.fire('Éxito', 'Noticia actualizada correctamente', 'success');
+    } catch (error) {
+      console.error('Error actualizando noticia:', error);
+      Swal.fire('Error', 'No se pudo actualizar la noticia', 'error');
+    }
+  };
+
+  const abrirEditarEquipo = (equipo) => {
+    setEditandoEquipoId(equipo.id);
+    setFormEditarEquipo({
+      numero: equipo.numero?.toString() || '',
+      categoria_id: equipo.categoria_id?.toString() || '',
+      marca: equipo.marca || '',
+      modelo: equipo.modelo || '',
+      serial: equipo.serial || '',
+      descripcion: equipo.descripcion || '',
+      estado: equipo.estado || 'disponible'
+    });
+    setModalEditarEquipo(true);
+  };
+
+  const guardarEditarEquipo = async () => {
+    if (!formEditarEquipo.numero || !formEditarEquipo.categoria_id) {
+      Swal.fire('Error', 'Número de equipo y categoría son requeridos', 'error');
+      return;
+    }
+
+    try {
+      await updateEquipo(editandoEquipoId, {
+        ...formEditarEquipo,
+        numero: parseInt(formEditarEquipo.numero),
+        categoria_id: parseInt(formEditarEquipo.categoria_id)
+      });
+      await cargarDatos();
+      setModalEditarEquipo(false);
+      setEditandoEquipoId(null);
+      Swal.fire('Éxito', 'Equipo actualizado correctamente', 'success');
+    } catch (error) {
+      console.error('Error actualizando equipo:', error);
+      Swal.fire('Error', error.message || 'No se pudo actualizar el equipo', 'error');
+    }
+  };
+
   const getEstadoTexto = (estado) => {
     switch (estado) {
       case 'disponible':
@@ -271,7 +359,21 @@ function Servicios() {
                       <small style={{ color: '#666' }}>
                         {formatearFecha(noticia.created_at)} - {noticia.autor_nombre || 'Sistema'}
                       </small>
-                      <div style={{ marginTop: '10px' }}>
+                      <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                        <button 
+                          onClick={() => abrirEditarNoticia(noticia)}
+                          style={{
+                            background: '#007832',
+                            color: 'white',
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Editar
+                        </button>
                         <button 
                           onClick={() => handleDeleteNoticia(noticia.id)}
                           style={{
@@ -367,7 +469,21 @@ function Servicios() {
                           {getEstadoTexto(equipo.estado)}
                         </span>
                       </div>
-                      <div style={{ marginTop: '10px' }}>
+                      <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
+                        <button 
+                          onClick={() => abrirEditarEquipo(equipo)}
+                          style={{
+                            background: '#007832',
+                            color: 'white',
+                            border: 'none',
+                            padding: '5px 10px',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontSize: '12px'
+                          }}
+                        >
+                          Editar
+                        </button>
                         <button 
                           onClick={() => handleDeleteEquipo(equipo.id)}
                           style={{
@@ -539,6 +655,169 @@ function Servicios() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {modalEditarNoticia && (
+        <div className="Overlay_Modal">
+          <div className="Contenedor_Modal_Añadir">
+            <div className="Header_Modal_Añadir">
+              <h2 className="Titulo_Modal">Editar Noticia</h2>
+              <button className="Cerrar_X" onClick={() => setModalEditarNoticia(false)}>&times;</button>
+            </div>
+
+            <div className="Cuerpo_Modal_Añadir">
+              <div className="Campo_Form">
+                <label className="Label_Form">Título</label>
+                <input 
+                  type="text" 
+                  className="Input_Texto"
+                  value={formEditarNoticia.titulo}
+                  onChange={(e) => setFormEditarNoticia({...formEditarNoticia, titulo: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div className="Campo_Form">
+                <label className="Label_Form">Descripción</label>
+                <textarea 
+                  className="Input_Area"
+                  value={formEditarNoticia.descripcion}
+                  onChange={(e) => setFormEditarNoticia({...formEditarNoticia, descripcion: e.target.value})}
+                  required
+                />
+              </div>
+
+              <div className="Campo_Form">
+                <label className="Label_Form">URL de imagen (opcional)</label>
+                <input 
+                  type="url" 
+                  className="Input_Texto"
+                  value={formEditarNoticia.imagen_url}
+                  onChange={(e) => setFormEditarNoticia({...formEditarNoticia, imagen_url: e.target.value})}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                />
+              </div>
+
+              <div className="Campo_Form">
+                <label className="Label_Form">Estado</label>
+                <select 
+                  className="Select_Modal"
+                  value={formEditarNoticia.publicado ? 'publicado' : 'borrador'}
+                  onChange={(e) => setFormEditarNoticia({...formEditarNoticia, publicado: e.target.value === 'publicado'})}
+                >
+                  <option value="publicado">Publicado</option>
+                  <option value="borrador">Borrador</option>
+                </select>
+              </div>
+
+              <div className="Footer_Publicar">
+                <button className="Btn_Publicar" onClick={guardarEditarNoticia}>
+                  💾 Guardar cambios
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalEditarEquipo && (
+        <div className="Overlay_Modal">
+          <div className="Contenedor_Modal_Recurso">
+            <div className="Header_Modal_Añadir">
+              <h2 className="Titulo_Modal">Editar Equipo</h2>
+              <button className="Cerrar_X" onClick={() => setModalEditarEquipo(false)}>&times;</button>
+            </div>
+
+            <div className="Cuerpo_Modal_Recurso">
+              <div className="Fila_Triple">
+                <div className="Campo_Form">
+                  <label className="Label_Form">Número de equipo</label>
+                  <input 
+                    type="number" 
+                    className="Input_Texto_Redondo" 
+                    value={formEditarEquipo.numero}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, numero: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="Campo_Form">
+                  <label className="Label_Form">Categoría</label>
+                  <select 
+                    className="Select_Modal"
+                    value={formEditarEquipo.categoria_id}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, categoria_id: e.target.value})}
+                    required
+                  >
+                    <option value="">Seleccionar categoría</option>
+                    {categorias.map(categoria => (
+                      <option key={categoria.id} value={categoria.id}>
+                        {categoria.nombre}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="Campo_Form">
+                  <label className="Label_Form">Estado</label>
+                  <select 
+                    className="Select_Modal"
+                    value={formEditarEquipo.estado}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, estado: e.target.value})}
+                  >
+                    <option value="disponible">Disponible</option>
+                    <option value="no_disponible">No disponible</option>
+                    <option value="ocupado">Ocupado</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="Fila_Triple">
+                <div className="Campo_Form">
+                  <label className="Label_Form">Marca</label>
+                  <input 
+                    type="text" 
+                    className="Input_Texto_Redondo"
+                    value={formEditarEquipo.marca}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, marca: e.target.value})}
+                  />
+                </div>
+                <div className="Campo_Form">
+                  <label className="Label_Form">Modelo</label>
+                  <input 
+                    type="text" 
+                    className="Input_Texto_Redondo"
+                    value={formEditarEquipo.modelo}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, modelo: e.target.value})}
+                  />
+                </div>
+                <div className="Campo_Form">
+                  <label className="Label_Form">Serial</label>
+                  <input 
+                    type="text" 
+                    className="Input_Texto_Redondo"
+                    value={formEditarEquipo.serial}
+                    onChange={(e) => setFormEditarEquipo({...formEditarEquipo, serial: e.target.value})}
+                  />
+                </div>
+              </div>
+
+              <div className="Campo_Form">
+                <label className="Label_Form">Descripción</label>
+                <textarea 
+                  className="Input_Area_Recurso" 
+                  placeholder="Detalles del equipo..."
+                  value={formEditarEquipo.descripcion}
+                  onChange={(e) => setFormEditarEquipo({...formEditarEquipo, descripcion: e.target.value})}
+                />
+              </div>
+
+              <div className="Footer_Publicar">
+                <button className="Btn_Guardar_Verde" onClick={guardarEditarEquipo}>
+                  💾 Guardar cambios
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

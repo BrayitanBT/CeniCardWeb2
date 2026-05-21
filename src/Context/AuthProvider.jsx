@@ -5,19 +5,20 @@ import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [rol, setRol] = useState(localStorage.getItem('user_rol') || '');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Leer sesión inicial al montar
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      setRol(localStorage.getItem('user_rol') || '');
       setLoading(false);
     });
 
-    // Escuchar cambios de sesión en tiempo real (login / logout / expiración)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        setRol(localStorage.getItem('user_rol') || '');
       }
     );
 
@@ -25,7 +26,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loading }}>
+    <AuthContext.Provider value={{ user, rol, setUser, setRol, loading }}>
       {children}
     </AuthContext.Provider>
   );

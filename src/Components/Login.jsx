@@ -15,13 +15,16 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [mostrarContrasena, setMostrarContrasena] = useState(false);
 
-  // Verificar si ya hay una sesión activa al cargar el componente
   useEffect(() => {
     const verificarSesion = async () => {
       const sesion = await obtenerSesionActual();
       if (sesion) {
-        // Si ya hay sesión, redirigir al panel principal
-        navigate("/Principal");
+        const rol = localStorage.getItem('user_rol') || '';
+        if (rol === 'instructor' || rol === 'contratista') {
+          navigate('/Carnes');
+        } else {
+          navigate('/Principal');
+        }
       }
     };
     verificarSesion();
@@ -33,7 +36,6 @@ function Login() {
       ...prev,
       [id === "Usuario" ? "documento" : "contrasena"]: value
     }));
-    // Limpiar error cuando el usuario empieza a escribir
     if (error) setError("");
   };
 
@@ -41,7 +43,6 @@ function Login() {
     e.preventDefault();
     setError("");
 
-    // Validaciones básicas
     const documentoLimpio = formData.documento.trim();
     const contrasenaLimpia = formData.contrasena.trim();
 
@@ -55,7 +56,6 @@ function Login() {
       return;
     }
 
-    // Validar que el documento sea numérico (ajusta según tu necesidad)
     if (!/^\d+$/.test(documentoLimpio)) {
       setError("El número de documento solo debe contener dígitos.");
       return;
@@ -75,18 +75,16 @@ function Login() {
       }
 
       if (data && data.session) {
-        // Opcional: guardar información del usuario en localStorage o contexto
         localStorage.setItem('user_rol', data.perfil?.rol || '');
         localStorage.setItem('user_nombre', data.perfil?.nombre_completo || '');
         
-        // Redirigir según el rol (opcional)
-        // if (data.perfil?.rol === 'admin') {
-        //   navigate("/AdminPanel");
-        // } else {
-        //   navigate("/Principal");
-        // }
+        const rol = data.perfil?.rol || '';
         
-        navigate("/Principal");
+        if (rol === 'instructor' || rol === 'contratista') {
+          navigate('/Carnes');
+        } else {
+          navigate('/Principal');
+        }
       } else {
         setError("Error al iniciar sesión. No se recibieron datos de sesión.");
       }
@@ -103,7 +101,10 @@ function Login() {
     <div className="Contenedor_Login">
       <div className="Tarjeta_login">
         <div className="Info_login">
-          <h1 className="Titulo">¡Bienvenido a CeniCard!</h1>
+          <h1 className="Titulo">
+            <span>CeniCard</span>
+            <small>Aplicativo administrativo</small>
+          </h1>
           <div className="Imagen">
             <img src={PersonaCenicard} alt="PersonaCenicard" className="imagen" />
           </div>
@@ -111,15 +112,16 @@ function Login() {
 
         <div className="Formu">
           <h2 className="Titulo_Login">Iniciar Sesión</h2>
+          <p className="Subtitulo_Login">Ingresa tus credenciales para continuar</p>
 
           {error && (
             <div className="error-message" style={{
               color: '#dc3545',
-              backgroundColor: '#f8d7da',
-              border: '1px solid #f5c6cb',
+              backgroundColor: '#fef2f2',
+              border: '1px solid #fecaca',
               borderRadius: '8px',
               padding: '12px',
-              margin: '10px 0',
+              margin: '0 0 var(--space-4) 0',
               fontSize: '14px',
               textAlign: 'center'
             }}>
@@ -148,27 +150,31 @@ function Login() {
                 <input
                   id="Password"
                   type={mostrarContrasena ? "text" : "password"}
-                  placeholder="••••••"
+                  placeholder="Ingresa tu contraseña"
                   required
                   value={formData.contrasena}
                   onChange={handleChange}
                   disabled={loading}
                   autoComplete="current-password"
-                  style={{ width: '100%', paddingRight: '40px' }}
+                  style={{ width: '100%', paddingRight: '44px' }}
                 />
                 <button
                   type="button"
                   onClick={() => setMostrarContrasena(!mostrarContrasena)}
                   style={{
                     position: 'absolute',
-                    right: '10px',
+                    right: '12px',
                     top: '50%',
                     transform: 'translateY(-50%)',
                     background: 'none',
                     border: 'none',
                     cursor: 'pointer',
-                    fontSize: '14px'
+                    fontSize: '16px',
+                    opacity: 0.6,
+                    transition: 'opacity 0.2s'
                   }}
+                  onMouseEnter={(e) => e.target.style.opacity = '1'}
+                  onMouseLeave={(e) => e.target.style.opacity = '0.6'}
                 >
                   {mostrarContrasena ? '🙈' : '👁️'}
                 </button>
@@ -191,8 +197,8 @@ function Login() {
                       display: 'inline-block',
                       width: '16px',
                       height: '16px',
-                      border: '2px solid #fff',
-                      borderTop: '2px solid transparent',
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      borderTop: '2px solid #fff',
                       borderRadius: '50%',
                       animation: 'spin 0.6s linear infinite',
                       marginRight: '8px'
@@ -205,12 +211,11 @@ function Login() {
           </form>
 
           <NavLink to="/Registro" className="Enlace">
-            <span>¿No tienes una cuenta?</span>
+            ¿No tienes una cuenta? <strong>Regístrate aquí</strong>
           </NavLink>
           
         </div>
       </div>
-      {/* Agregar estilos para el spinner */}
       <style jsx>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }

@@ -12,7 +12,9 @@ import Perfil from './Components/Perfil.jsx'
 import Historial from './Components/Historial.jsx'
 import Añadir from './Components/Añadir.jsx'
 import Categorias from './Components/Categorias.jsx'
+import Carnes from './Components/Carnes.jsx'
 import { ProtectedRoute } from './Components/ProtectedRoute.jsx'
+import { ProtectedRouteByRole } from './Components/ProtectedRouteByRole.jsx'
 
 // Componente para agrupar rutas protegidas
 function ProtectedRoutes() {
@@ -43,13 +45,23 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path='/Registro' element={<Registro />} />
           
-          {/* Rutas protegidas */}
+          {/* Ruta para instructores y contratistas */}
+          <Route 
+            path="/Carnes" 
+            element={
+              <ProtectedRouteByRole allowedRoles={['instructor', 'contratista']}>
+                <Carnes />
+              </ProtectedRouteByRole>
+            } 
+          />
+          
+          {/* Rutas protegidas (funcionarios y administradores) */}
           <Route 
             path="/*" 
             element={
-              <ProtectedRoute>
+              <ProtectedRouteByRole allowedRoles={['funcionario', 'admin']}>
                 <ProtectedRoutes />
-              </ProtectedRoute>
+              </ProtectedRouteByRole>
             } 
           />
         </Routes>

@@ -183,3 +183,28 @@ export async function getRolesDisponibles() {
   const rolesUnicos = [...new Set(data.map(item => item.rol))].filter(Boolean)
   return rolesUnicos.sort()
 }
+
+export async function getAllUsuariosConFichas() {
+  const { data, error } = await supabase
+    .from('usuarios')
+    .select(`
+      *,
+      fichas(codigo_ficha, nombre_programa)
+    `)
+    .order('primer_apellido', { ascending: true })
+
+  if (error) {
+    console.error('Error obteniendo usuarios:', error)
+    return []
+  }
+  
+  return data.map(user => ({
+    ...user,
+    nombre: formatearNombreCompleto(
+      user.primer_nombre, 
+      user.segundo_nombre, 
+      user.primer_apellido, 
+      user.segundo_apellido
+    )
+  }))
+}
