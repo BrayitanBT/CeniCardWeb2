@@ -4,6 +4,7 @@ import Layout from './Layout';
 import { getPrestamos, aprobarPrestamo, rechazarPrestamo } from '../services/prestamoService';
 import { getCategoriasEquipos } from '../services/equipoService';
 import { useAuth } from '../Context/AuthContext';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Solicitudes.css';
 
@@ -35,8 +36,7 @@ function Solicitudes() {
       setSolicitudes(solicitudesPendientes);
       setCategorias(categoriasData);
     } catch (error) {
-      console.error('Error cargando solicitudes:', error);
-      Swal.fire('Error', 'No se pudieron cargar las solicitudes', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -74,8 +74,7 @@ function Solicitudes() {
         await cargarDatos();
         Swal.fire('Aprobado', 'La solicitud ha sido aprobada correctamente', 'success');
       } catch (error) {
-        console.error('Error aprobando solicitud:', error);
-        Swal.fire('Error', 'No se pudo aprobar la solicitud', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -104,8 +103,7 @@ function Solicitudes() {
         await cargarDatos();
         Swal.fire('Rechazado', 'La solicitud ha sido rechazada', 'success');
       } catch (error) {
-        console.error('Error rechazando solicitud:', error);
-        Swal.fire('Error', 'No se pudo rechazar la solicitud', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { getPrestamos, devolverEquipo } from '../services/prestamoService';
 import { useAuth } from '../Context/AuthContext';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Añadir.css';
 
@@ -23,8 +24,7 @@ function Añadir() {
       const activos = prestamos.filter(p => p.estado === 'aceptado');
       setPrestamosActivos(activos);
     } catch (error) {
-      console.error('Error cargando préstamos activos:', error);
-      Swal.fire('Error', 'No se pudieron cargar los préstamos activos', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -56,8 +56,7 @@ function Añadir() {
         await cargarPrestamosActivos();
         Swal.fire('Liberado', 'El equipo ha sido liberado correctamente', 'success');
       } catch (error) {
-        console.error('Error liberando equipo:', error);
-        Swal.fire('Error', 'No se pudo liberar el equipo', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };

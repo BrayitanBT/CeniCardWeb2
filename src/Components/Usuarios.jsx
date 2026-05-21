@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Layout from './Layout';
 import { getUsuarios, updateUsuario, deleteUsuario, getRolesDisponibles, createUsuario } from '../services/userService';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Usuarios.css';
 
@@ -51,8 +52,7 @@ function Usuarios() {
       const data = await getUsuarios();
       setUsuarios(data);
     } catch (error) {
-      console.error('Error cargando usuarios:', error);
-      Swal.fire('Error', 'No se pudieron cargar los usuarios', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ function Usuarios() {
       const roles = await getRolesDisponibles();
       setRolesDisponibles(roles);
     } catch (error) {
-      console.error('Error cargando roles:', error);
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 
@@ -143,8 +143,7 @@ function Usuarios() {
       setModalEditar(false);
       Swal.fire('Actualizado', 'Usuario actualizado correctamente', 'success');
     } catch (error) {
-      console.error('Error actualizando usuario:', error);
-      Swal.fire('Error', 'No se pudo actualizar el usuario', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setGuardando(false);
     }
@@ -167,8 +166,7 @@ function Usuarios() {
       setModalEstado(false);
       Swal.fire('Actualizado', `Carné ${getEstadoCarneTexto(estadoSeleccionado).toLowerCase()}`, 'success');
     } catch (error) {
-      console.error('Error cambiando estado:', error);
-      Swal.fire('Error', 'No se pudo cambiar el estado', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setGuardando(false);
     }
@@ -217,8 +215,7 @@ function Usuarios() {
       setModalCrear(false);
       Swal.fire('Creado', 'Usuario creado correctamente', 'success');
     } catch (error) {
-      console.error('Error creando usuario:', error);
-      Swal.fire('Error', error.message || 'No se pudo crear el usuario', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setGuardando(false);
     }
@@ -242,8 +239,7 @@ function Usuarios() {
         await cargarUsuarios();
         Swal.fire('Eliminado', 'Usuario eliminado correctamente', 'success');
       } catch (error) {
-        console.error('Error eliminando usuario:', error);
-        Swal.fire('Error', 'No se pudo eliminar el usuario', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };

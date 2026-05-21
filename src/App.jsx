@@ -13,6 +13,7 @@ import Historial from './Components/Historial.jsx'
 import Añadir from './Components/Añadir.jsx'
 import Categorias from './Components/Categorias.jsx'
 import Carnes from './Components/Carnes.jsx'
+import ErrorBoundary from './Components/ErrorBoundary.jsx'
 import { ProtectedRoute } from './Components/ProtectedRoute.jsx'
 import { ProtectedRouteByRole } from './Components/ProtectedRouteByRole.jsx'
 
@@ -49,9 +50,11 @@ function App() {
           <Route 
             path="/Carnes" 
             element={
-              <ProtectedRouteByRole allowedRoles={['instructor', 'contratista']}>
-                <Carnes />
-              </ProtectedRouteByRole>
+              <ErrorBoundary>
+                <ProtectedRouteByRole allowedRoles={['instructor', 'contratista']}>
+                  <Carnes />
+                </ProtectedRouteByRole>
+              </ErrorBoundary>
             } 
           />
           
@@ -59,9 +62,11 @@ function App() {
           <Route 
             path="/*" 
             element={
-              <ProtectedRouteByRole allowedRoles={['funcionario', 'admin']}>
-                <ProtectedRoutes />
-              </ProtectedRouteByRole>
+              <ErrorBoundary>
+                <ProtectedRouteByRole allowedRoles={['funcionario', 'admin']}>
+                  <ProtectedRoutes />
+                </ProtectedRouteByRole>
+              </ErrorBoundary>
             } 
           />
         </Routes>

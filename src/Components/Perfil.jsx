@@ -165,9 +165,19 @@ function Perfil() {
   const cargarPerfil = async () => {
     if (!user?.id) return;
     setLoading(true);
-    const data = await obtenerPerfilUsuario(user.id);
-    setPerfil(data);
-    setLoading(false);
+    try {
+      const data = await obtenerPerfilUsuario(user.id);
+      if (!data) {
+        setPerfil(null);
+        return;
+      }
+      setPerfil(data);
+    } catch (error) {
+      console.error('Error cargando perfil:', error);
+      setPerfil(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const cargarOpcionesFormacion = async () => {
@@ -324,6 +334,14 @@ function Perfil() {
       <div className="Perfil_Loading">
         <div className="Perfil_Spinner"></div>
         <p>Cargando perfil...</p>
+      </div>
+    </Layout>
+  );
+
+  if (!perfil) return (
+    <Layout>
+      <div className="Perfil_Loading">
+        <p>No se pudo cargar el perfil. Intenta de nuevo más tarde.</p>
       </div>
     </Layout>
   );

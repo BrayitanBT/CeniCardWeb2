@@ -14,6 +14,7 @@ import {
   getCategoriasEquipos
 } from '../services/equipoService';
 import { useAuth } from '../Context/AuthContext';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Servicios.css';
 
@@ -84,8 +85,7 @@ function Servicios() {
       setEquipos(equiposData);
       setCategorias(categoriasData);
     } catch (error) {
-      console.error('Error cargando datos:', error);
-      Swal.fire('Error', 'No se pudieron cargar los datos', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -137,8 +137,7 @@ function Servicios() {
       
       Swal.fire('Éxito', 'Noticia publicada correctamente', 'success');
     } catch (error) {
-      console.error('Error creando noticia:', error);
-      Swal.fire('Error', 'No se pudo publicar la noticia', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 
@@ -170,8 +169,7 @@ function Servicios() {
       
       Swal.fire('Éxito', 'Equipo agregado correctamente', 'success');
     } catch (error) {
-      console.error('Error creando equipo:', error);
-      Swal.fire('Error', 'No se pudo agregar el equipo', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 
@@ -193,8 +191,7 @@ function Servicios() {
         await cargarDatos();
         Swal.fire('Eliminado', 'La noticia ha sido eliminada', 'success');
       } catch (error) {
-        console.error('Error eliminando noticia:', error);
-        Swal.fire('Error', 'No se pudo eliminar la noticia', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -217,8 +214,7 @@ function Servicios() {
         await cargarDatos();
         Swal.fire('Eliminado', 'El equipo ha sido eliminado', 'success');
       } catch (error) {
-        console.error('Error eliminando equipo:', error);
-        Swal.fire('Error', error.message || 'No se pudo eliminar el equipo', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -247,8 +243,7 @@ function Servicios() {
       setEditandoNoticiaId(null);
       Swal.fire('Éxito', 'Noticia actualizada correctamente', 'success');
     } catch (error) {
-      console.error('Error actualizando noticia:', error);
-      Swal.fire('Error', 'No se pudo actualizar la noticia', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 
@@ -283,8 +278,7 @@ function Servicios() {
       setEditandoEquipoId(null);
       Swal.fire('Éxito', 'Equipo actualizado correctamente', 'success');
     } catch (error) {
-      console.error('Error actualizando equipo:', error);
-      Swal.fire('Error', error.message || 'No se pudo actualizar el equipo', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 

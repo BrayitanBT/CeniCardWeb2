@@ -13,12 +13,20 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null);
       setRol(localStorage.getItem('user_rol') || '');
       setLoading(false);
+    }).catch((err) => {
+      console.error('Error obteniendo sesión inicial:', err);
+      setUser(null);
+      setRol('');
+      setLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
         setRol(localStorage.getItem('user_rol') || '');
+      },
+      (error) => {
+        console.error('Error en auth state change:', error);
       }
     );
 

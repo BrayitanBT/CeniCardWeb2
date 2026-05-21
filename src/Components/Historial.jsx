@@ -3,6 +3,7 @@ import Layout from './Layout';
 import { getHistorial } from '../services/historialService';
 import { devolverEquipo } from '../services/prestamoService';
 import { useAuth } from '../Context/AuthContext';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -29,8 +30,7 @@ function Historial() {
       const data = await getHistorial();
       setHistorial(data);
     } catch (error) {
-      console.error('Error cargando historial:', error);
-      Swal.fire('Error', 'No se pudo cargar el historial', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -70,8 +70,7 @@ function Historial() {
         await cargarHistorial();
         Swal.fire('Liberado', 'El equipo ha sido liberado correctamente', 'success');
       } catch (error) {
-        console.error('Error liberando equipo:', error);
-        Swal.fire('Error', 'No se pudo liberar el equipo', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -517,8 +516,7 @@ function Historial() {
       doc.save(`historial-cenicard-${new Date().toISOString().split('T')[0]}.pdf`);
       Swal.fire('Éxito', 'Reporte PDF descargado correctamente', 'success');
     } catch (error) {
-      console.error('Error generando PDF:', error);
-      Swal.fire('Error', 'No se pudo generar el reporte PDF', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setGenerandoPDF(false);
     }

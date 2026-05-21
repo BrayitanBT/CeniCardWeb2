@@ -6,6 +6,7 @@ import {
   updateCategoria, 
   deleteCategoria 
 } from '../services/equipoService';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Usuarios.css'; // Reutilizamos estilos similares
 
@@ -30,8 +31,7 @@ function Categorias() {
       const data = await getCategoriasEquipos();
       setCategorias(data);
     } catch (error) {
-      console.error('Error cargando categorías:', error);
-      Swal.fire('Error', 'No se pudieron cargar las categorías', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     } finally {
       setLoading(false);
     }
@@ -61,8 +61,7 @@ function Categorias() {
       
       Swal.fire('Éxito', 'Categoría creada correctamente', 'success');
     } catch (error) {
-      console.error('Error creando categoría:', error);
-      Swal.fire('Error', 'No se pudo crear la categoría', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 
@@ -97,8 +96,7 @@ function Categorias() {
         await cargarCategorias();
         Swal.fire('Actualizado', 'Categoría actualizada correctamente', 'success');
       } catch (error) {
-        console.error('Error actualizando categoría:', error);
-        Swal.fire('Error', 'No se pudo actualizar la categoría', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -121,8 +119,7 @@ function Categorias() {
         await cargarCategorias();
         Swal.fire('Eliminado', 'Categoría eliminada correctamente', 'success');
       } catch (error) {
-        console.error('Error eliminando categoría:', error);
-        Swal.fire('Error', error.message || 'No se pudo eliminar la categoría', 'error');
+        Swal.fire('Error', handleApiError(error), 'error');
       }
     }
   };
@@ -137,8 +134,7 @@ function Categorias() {
         'success'
       );
     } catch (error) {
-      console.error('Error cambiando estado de categoría:', error);
-      Swal.fire('Error', 'No se pudo cambiar el estado de la categoría', 'error');
+      Swal.fire('Error', handleApiError(error), 'error');
     }
   };
 

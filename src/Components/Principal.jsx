@@ -8,6 +8,8 @@ import { getUsuarios } from '../services/userService';
 import { getPrestamos } from '../services/prestamoService';
 import { getNoticias } from '../services/noticiaService';
 import { getEquipos } from '../services/equipoService';
+import { handleApiError } from '../services/errorService';
+import Swal from 'sweetalert2';
 import { useAuth } from '../Context/AuthContext';
 
 function Principal() {
@@ -64,7 +66,8 @@ function Principal() {
       }
 
     } catch (error) {
-      console.error('Error cargando datos del dashboard:', error);
+      const message = handleApiError(error, 'Principal.cargarDatos');
+      Swal.fire('Error', message, 'error');
     } finally {
       setLoading(false);
     }

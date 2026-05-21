@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import { cerrarSesion, obtenerPerfilUsuario } from '../services/authService';
+import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import "../Style/Header.css";
 import { FaBell, FaSignOutAlt, FaBars } from 'react-icons/fa';
@@ -15,8 +16,13 @@ function Header({ onToggleSidebar }) {
   useEffect(() => {
     const cargarPerfil = async () => {
       if (user?.id) {
-        const perfilUsuario = await obtenerPerfilUsuario(user.id);
-        setPerfil(perfilUsuario);
+        try {
+          const perfilUsuario = await obtenerPerfilUsuario(user.id);
+          setPerfil(perfilUsuario);
+        } catch (error) {
+          console.error('Error cargando perfil en Header:', error);
+          setPerfil(null);
+        }
       }
     };
     cargarPerfil();
@@ -68,8 +74,8 @@ function Header({ onToggleSidebar }) {
           showConfirmButton: false
         });
       } catch (error) {
-        console.error('Error cerrando sesión:', error);
-        Swal.fire('Error', 'No se pudo cerrar la sesión', 'error');
+        const message = handleApiError(error, 'Header.handleLogout');
+        Swal.fire('Error', message, 'error');
       }
     }
   };

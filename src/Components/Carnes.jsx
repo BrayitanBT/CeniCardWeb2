@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { getAllUsuariosConFichas } from '../services/userService';
+import { handleApiError } from '../services/errorService';
+import Swal from 'sweetalert2';
 import '../Style/Carnes.css';
 
 const labelRol = {
@@ -34,7 +36,8 @@ function Carnes() {
       const data = await getAllUsuariosConFichas();
       setUsuarios(data.map(u => ({ ...u, volteado: false })));
     } catch (error) {
-      console.error('Error cargando usuarios:', error);
+      const message = handleApiError(error, 'Carnes.cargarUsuarios');
+      Swal.fire('Error', message, 'error');
     } finally {
       setLoading(false);
     }

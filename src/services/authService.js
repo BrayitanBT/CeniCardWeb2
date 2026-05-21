@@ -184,7 +184,13 @@ export async function obtenerSesionActual() {
 }
 
 export async function cerrarSesion() {
-  return await supabase.auth.signOut()
+  try {
+    const { error } = await supabase.auth.signOut()
+    if (error) throw error
+  } catch (error) {
+    console.error('Error cerrando sesión:', error)
+    throw error
+  }
 }
 
 export async function obtenerPerfilUsuario(userId) {
