@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import "../Style/MenuLateral.css";
 import LogoSena from "../Img/logoSena.png";
-import { FaHome, FaUsers, FaFolder, FaCog } from 'react-icons/fa'; 
+import { FaHome, FaUsers, FaFolder, FaCog, FaIdCard } from 'react-icons/fa'; 
 
 function MenuLateral({ open = false, collapsed = false, onClose }) {
   const handleLinkClick = () => {
@@ -25,6 +25,11 @@ function MenuLateral({ open = false, collapsed = false, onClose }) {
         <NavLink to="/Principal" className={({ isActive }) => `Item_Menu${isActive ? ' active' : ''}`} onClick={handleLinkClick}>
           <FaHome className="Icono" />
           <span>Inicio</span>
+        </NavLink>
+
+        <NavLink to="/Carnes" className={({ isActive }) => `Item_Menu${isActive ? ' active' : ''}`} onClick={handleLinkClick}>
+          <FaIdCard className="Icono" />
+          <span>Carnés</span>
         </NavLink>
 
         <NavLink to="/Usuarios" className={({ isActive }) => `Item_Menu${isActive ? ' active' : ''}`} onClick={handleLinkClick}>

@@ -1,5 +1,17 @@
 import { supabase } from '../supabaseClient'
 
+async function notificarAdmins(tipo, titulo, descripcion) {
+  try {
+    await supabase.rpc('crear_notificaciones_admin', {
+      p_tipo: tipo,
+      p_titulo: titulo,
+      p_descripcion: descripcion || null
+    })
+  } catch (e) {
+    console.error('Error notificando a administradores:', e)
+  }
+}
+
 export async function getEquipos() {
   const { data, error } = await supabase
     .from('equipos')
@@ -89,7 +101,15 @@ export async function createEquipo(equipo) {
     console.error('Error creando equipo:', error)
     throw error
   }
-  return data[0]
+
+  const nuevoEquipo = data[0]
+  await notificarAdmins(
+    'equipo_agregado',
+    'Nuevo equipo agregado',
+    `Equipo #${nuevoEquipo.numero} - ${nuevoEquipo.marca || ''} ${nuevoEquipo.modelo || ''}`.trim()
+  )
+
+  return nuevoEquipo
 }
 
 export async function updateEquipo(id, updates) {

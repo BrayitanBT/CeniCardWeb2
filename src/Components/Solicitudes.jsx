@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 import { getPrestamos, aprobarPrestamo, rechazarPrestamo } from '../services/prestamoService';
 import { getCategoriasEquipos } from '../services/equipoService';
@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import '../Style/Solicitudes.css';
 
 function Solicitudes() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [solicitudes, setSolicitudes] = useState([]);
   const [categorias, setCategorias] = useState([]);
@@ -138,10 +139,18 @@ function Solicitudes() {
             <h2>Administrador de solicitudes</h2>
             <p>Gestione préstamos y agregue material de trabajo u entretenimiento.</p>
           </div>
-          <div className="Acciones_Header">
-             <NavLink to="/Historial" className="Btn_Historial">
-                <span>Historial</span>
-              </NavLink>
+           <div className="Acciones_Header">
+            <button
+              type="button"
+              className="Btn_Historial"
+              onClick={() => navigate('/Historial')}
+            >
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+              <span>Historial</span>
+            </button>
           </div>
         </div>
 

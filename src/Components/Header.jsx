@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import { cerrarSesion, obtenerPerfilUsuario } from '../services/authService';
 import { handleApiError } from '../services/errorService';
+import { getNotificacionesNoLeidas, getNotificaciones, marcarNotificacionLeida, marcarTodasNotificacionesLeidas } from '../services/notificacionService';
+import { supabase } from '../supabaseClient';
 import Swal from 'sweetalert2';
 import "../Style/Header.css";
 import { FaBell, FaSignOutAlt, FaBars } from 'react-icons/fa';
@@ -12,6 +14,88 @@ function Header({ onToggleSidebar }) {
   const { user, setUser } = useAuth();
   const navigate = useNavigate();
   const [perfil, setPerfil] = useState(null);
+  const [notificaciones, setNotificaciones] = useState([]);
+  const [noLeidas, setNoLeidas] = useState(0);
+  const [dropdownAbierto, setDropdownAbierto] = useState(false);
+  const [cargandoNotifs, setCargandoNotifs] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const cargarNotificaciones = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const [todas, noLeidasList] = await Promise.all([
+        getNotificaciones(user.id),
+        getNotificacionesNoLeidas(user.id)
+      ]);
+      setNotificaciones(todas);
+      setNoLeidas(noLeidasList.length);
+    } catch (error) {
+      console.error('Error cargando notificaciones:', error);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    cargarNotificaciones();
+
+    const polling = setInterval(cargarNotificaciones, 15000);
+
+    const channel = supabase
+      .channel('notificaciones_realtime')
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'notificaciones', filter: `usuario_id=eq.${user.id}` },
+        (payload) => {
+          setNotificaciones(prev => [payload.new, ...prev]);
+          if (!payload.new.leida) {
+            setNoLeidas(prev => prev + 1);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      clearInterval(polling);
+      channel.unsubscribe();
+    };
+  }, [cargarNotificaciones, user?.id]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownAbierto(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const toggleDropdown = () => {
+    const abriendo = !dropdownAbierto;
+    setDropdownAbierto(abriendo);
+    if (abriendo) {
+      setCargandoNotifs(true);
+      cargarNotificaciones().finally(() => setCargandoNotifs(false));
+    }
+  };
+
+  const handleMarcarLeida = async (id) => {
+    try {
+      await marcarNotificacionLeida(id);
+      cargarNotificaciones();
+    } catch (error) {
+      console.error('Error marcando notificación como leída:', error);
+    }
+  };
+
+  const handleMarcarTodasLeidas = async () => {
+    try {
+      await marcarTodasNotificacionesLeidas(user.id);
+      cargarNotificaciones();
+    } catch (error) {
+      console.error('Error marcando todas como leídas:', error);
+    }
+  };
 
   useEffect(() => {
     const cargarPerfil = async () => {
@@ -80,6 +164,34 @@ function Header({ onToggleSidebar }) {
     }
   };
 
+  const formatearTiempo = (fecha) => {
+    const ahora = new Date();
+    const creada = new Date(fecha);
+    const diffMs = ahora - creada;
+    const diffMin = Math.floor(diffMs / 60000);
+    if (diffMin < 1) return 'Ahora';
+    if (diffMin < 60) return `hace ${diffMin} min`;
+    const diffHoras = Math.floor(diffMin / 60);
+    if (diffHoras < 24) return `hace ${diffHoras} h`;
+    const diffDias = Math.floor(diffHoras / 24);
+    if (diffDias < 7) return `hace ${diffDias} d`;
+    return creada.toLocaleDateString();
+  };
+
+  const getIconoNotificacion = (tipo) => {
+    const iconos = {
+      'prestamo_creado': '📋',
+      'prestamo_aceptado': '✅',
+      'prestamo_rechazado': '❌',
+      'equipo_agregado': '🖥️',
+      'equipo_devuelto': '🔄',
+      'noticia_creada': '📰',
+      'usuario_creado': '👤',
+      'perfil_actualizado': '📝'
+    };
+    return iconos[tipo] || '🔔';
+  };
+
   return (
     <header className="Header_Cenicard">
       <button 
@@ -91,9 +203,48 @@ function Header({ onToggleSidebar }) {
       </button>
 
       <div className="Header_Grupo_Iconos">
-        <div className="Notificaciones">
-          <FaBell className="Icono_Campana" />
-          <span className="Punto_Notificacion"></span>
+        <div className="Notificaciones" ref={dropdownRef}>
+          <FaBell className="Icono_Campana" onClick={toggleDropdown} />
+          {noLeidas > 0 && (
+            <span className="Punto_Notificacion">
+              {noLeidas > 9 ? '9+' : noLeidas}
+            </span>
+          )}
+
+          {dropdownAbierto && (
+            <div className="Dropdown_Notificaciones">
+              <div className="Dropdown_Header">
+                <span className="Dropdown_Titulo">Notificaciones</span>
+                {noLeidas > 0 && (
+                  <button className="Dropdown_MarcarLeidas" onClick={handleMarcarTodasLeidas}>
+                    Marcar todas leídas
+                  </button>
+                )}
+              </div>
+              <div className="Dropdown_Lista">
+                {notificaciones.length === 0 ? (
+                  <div className="Dropdown_Vacio">No hay notificaciones</div>
+                ) : (
+                  notificaciones.slice(0, 20).map(notif => (
+                    <div
+                      key={notif.id}
+                      className={`Dropdown_Item ${!notif.leida ? 'no_leida' : ''}`}
+                      onClick={() => !notif.leida && handleMarcarLeida(notif.id)}
+                    >
+                      <span className="Item_Icono">{getIconoNotificacion(notif.tipo)}</span>
+                      <div className="Item_Contenido">
+                        <span className="Item_Titulo">{notif.titulo}</span>
+                        {notif.descripcion && (
+                          <span className="Item_Descripcion">{notif.descripcion}</span>
+                        )}
+                        <span className="Item_Tiempo">{formatearTiempo(notif.created_at)}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="Separador"></div>

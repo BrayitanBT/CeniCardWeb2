@@ -5,6 +5,8 @@ import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Usuarios.css';
 
+const OPCIONES_RH = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -24,9 +26,10 @@ function Usuarios() {
     numero_cc: '',
     correo: '',
     contrasena: '',
+    confirmarContrasena: '',
     celular: '',
     rol: 'aprendiz',
-    centro_formacion: '',
+    centro_formacion: 'CENIGRAF',
     regional: '',
     rh: '',
     fecha_vencimiento_carne: '',
@@ -38,6 +41,7 @@ function Usuarios() {
     perfil_profesional: ''
   });
   const [guardando, setGuardando] = useState(false);
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
   const [estadoSeleccionado, setEstadoSeleccionado] = useState('');
   const [rolesDisponibles, setRolesDisponibles] = useState([]);
 
@@ -181,10 +185,10 @@ function Usuarios() {
       numero_cc: '',
       correo: '',
       contrasena: '',
+      confirmarContrasena: '',
       celular: '',
       rol: 'aprendiz',
-      centro_formacion: '',
-      regional: '',
+      centro_formacion: 'CENIGRAF',
       rh: '',
       fecha_vencimiento_carne: '',
       foto_url: '',
@@ -198,8 +202,8 @@ function Usuarios() {
   };
 
   const handleCrearUsuario = async () => {
-    if (!formCrear.primer_nombre || !formCrear.primer_apellido || !formCrear.numero_cc || !formCrear.correo || !formCrear.contrasena) {
-      Swal.fire('Error', 'Nombre, apellido, documento, correo y contraseña son requeridos', 'error');
+    if (!formCrear.primer_nombre || !formCrear.primer_apellido || !formCrear.segundo_apellido || !formCrear.numero_cc || !formCrear.correo || !formCrear.contrasena) {
+      Swal.fire('Error', 'Nombre, apellidos, documento, correo y contraseña son requeridos', 'error');
       return;
     }
 
@@ -208,9 +212,15 @@ function Usuarios() {
       return;
     }
 
+    if (formCrear.contrasena !== formCrear.confirmarContrasena) {
+      Swal.fire('Error', 'Las contraseñas no coinciden', 'error');
+      return;
+    }
+
     setGuardando(true);
     try {
       await createUsuario(formCrear);
+
       await cargarUsuarios();
       setModalCrear(false);
       Swal.fire('Creado', 'Usuario creado correctamente', 'success');
@@ -378,6 +388,7 @@ function Usuarios() {
             <h2 className="Modal_Titulo_Perfil">✏️ Editar usuario: {usuarioSeleccionado.nombre}</h2>
             <p className="Modal_Sub_Perfil">Actualiza la información del usuario.</p>
 
+            <form onSubmit={e => { e.preventDefault(); handleGuardarUsuario(); }}>
             {/* Información Personal */}
             <div className="Modal_Seccion_Perfil">
               <h3 className="Modal_Seccion_Titulo">📝 Información Personal</h3>
@@ -431,12 +442,13 @@ function Usuarios() {
                   />
                 </div>
                 <div className="Modal_Campo_Perfil">
-                  <label>Correo electrónico</label>
+                  <label>Correo electrónico *</label>
                   <input
                     type="email"
                     className="Modal_Input_Perfil"
                     value={formUsuario.correo}
                     onChange={e => setFormUsuario(prev => ({ ...prev, correo: e.target.value }))}
+                    required
                   />
                 </div>
               </div>
@@ -457,22 +469,17 @@ function Usuarios() {
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Tipo de RH</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
+                  <select
+                    className="Modal_Select_Perfil"
                     value={formUsuario.rh}
                     onChange={e => setFormUsuario(prev => ({ ...prev, rh: e.target.value }))}
-                  />
+                  >
+                    <option value="">Seleccionar</option>
+                    {OPCIONES_RH.map(rh => (
+                      <option key={rh} value={rh}>{rh}</option>
+                    ))}
+                  </select>
                 </div>
-              </div>
-              <div className="Modal_Campo_Perfil">
-                <label>URL de foto</label>
-                <input
-                  type="url"
-                  className="Modal_Input_Perfil"
-                  value={formUsuario.foto_url}
-                  onChange={e => setFormUsuario(prev => ({ ...prev, foto_url: e.target.value }))}
-                />
               </div>
             </div>
 
@@ -482,21 +489,13 @@ function Usuarios() {
               <div className="Modal_Grid_Perfil">
                 <div className="Modal_Campo_Perfil">
                   <label>Centro de formación</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
+                  <select
+                    className="Modal_Select_Perfil"
                     value={formUsuario.centro_formacion}
                     onChange={e => setFormUsuario(prev => ({ ...prev, centro_formacion: e.target.value }))}
-                  />
-                </div>
-                <div className="Modal_Campo_Perfil">
-                  <label>Regional</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
-                    value={formUsuario.regional}
-                    onChange={e => setFormUsuario(prev => ({ ...prev, regional: e.target.value }))}
-                  />
+                  >
+                    <option value="CENIGRAF">CENIGRAF</option>
+                  </select>
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Rol</label>
@@ -562,6 +561,15 @@ function Usuarios() {
                     onChange={e => setFormUsuario(prev => ({ ...prev, contacto_emergencia_telefono: e.target.value }))}
                   />
                 </div>
+                <div className="Modal_Campo_Perfil">
+                  <label>URL de foto</label>
+                  <input
+                    type="url"
+                    className="Modal_Input_Perfil"
+                    value={formUsuario.foto_url}
+                    onChange={e => setFormUsuario(prev => ({ ...prev, foto_url: e.target.value }))}
+                  />
+                </div>
               </div>
             </div>
 
@@ -579,13 +587,14 @@ function Usuarios() {
               </div>
             </div>
 
-            <button
-              className="Modal_Btn_Perfil"
-              onClick={handleGuardarUsuario}
-              disabled={guardando}
-            >
-              {guardando ? 'Guardando...' : 'GUARDAR CAMBIOS'}
-            </button>
+              <button
+                type="submit"
+                className="Modal_Btn_Perfil"
+                disabled={guardando}
+              >
+                {guardando ? 'Guardando...' : 'GUARDAR CAMBIOS'}
+              </button>
+            </form>
             <button
               className="Modal_Cancelar_Perfil"
               onClick={() => setModalEditar(false)}
@@ -699,6 +708,7 @@ function Usuarios() {
             <h2 className="Modal_Titulo_Perfil"> Crear nuevo usuario</h2>
             <p className="Modal_Sub_Perfil">Completa todos los campos para registrar un nuevo usuario.</p>
 
+            <form onSubmit={e => { e.preventDefault(); handleCrearUsuario(); }}>
             {/* Información Personal */}
             <div className="Modal_Seccion_Perfil">
               <h3 className="Modal_Seccion_Titulo">📝 Información Personal</h3>
@@ -733,12 +743,13 @@ function Usuarios() {
                   />
                 </div>
                 <div className="Modal_Campo_Perfil">
-                  <label>Segundo apellido</label>
+                  <label>Segundo apellido *</label>
                   <input
                     type="text"
                     className="Modal_Input_Perfil"
                     value={formCrear.segundo_apellido}
                     onChange={e => setFormCrear(prev => ({ ...prev, segundo_apellido: e.target.value }))}
+                    required
                   />
                 </div>
                 <div className="Modal_Campo_Perfil">
@@ -763,14 +774,36 @@ function Usuarios() {
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Contraseña *</label>
-                  <input
-                    type="password"
-                    className="Modal_Input_Perfil"
-                    value={formCrear.contrasena}
-                    onChange={e => setFormCrear(prev => ({ ...prev, contrasena: e.target.value }))}
-                    placeholder="Mínimo 6 caracteres"
-                    required
-                  />
+                  <div className="Modal_Password_Wrapper">
+                    <input
+                      type={mostrarContrasena ? 'text' : 'password'}
+                      className="Modal_Input_Perfil"
+                      value={formCrear.contrasena}
+                      onChange={e => setFormCrear(prev => ({ ...prev, contrasena: e.target.value }))}
+                      placeholder="Mínimo 6 caracteres"
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="Modal_Password_Toggle"
+                      onClick={() => setMostrarContrasena(!mostrarContrasena)}
+                    >
+                      {mostrarContrasena ? '🙈' : '👁️'}
+                    </button>
+                  </div>
+                </div>
+                <div className="Modal_Campo_Perfil">
+                  <label>Confirmar contraseña *</label>
+                  <div className="Modal_Password_Wrapper">
+                    <input
+                      type={mostrarContrasena ? 'text' : 'password'}
+                      className="Modal_Input_Perfil"
+                      value={formCrear.confirmarContrasena}
+                      onChange={e => setFormCrear(prev => ({ ...prev, confirmarContrasena: e.target.value }))}
+                      placeholder="Repite la contraseña"
+                      required
+                    />
+                  </div>
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Celular</label>
@@ -802,21 +835,13 @@ function Usuarios() {
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Centro de formación</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
+                  <select
+                    className="Modal_Select_Perfil"
                     value={formCrear.centro_formacion}
                     onChange={e => setFormCrear(prev => ({ ...prev, centro_formacion: e.target.value }))}
-                  />
-                </div>
-                <div className="Modal_Campo_Perfil">
-                  <label>Regional</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
-                    value={formCrear.regional}
-                    onChange={e => setFormCrear(prev => ({ ...prev, regional: e.target.value }))}
-                  />
+                  >
+                    <option value="CENIGRAF">CENIGRAF</option>
+                  </select>
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>Fecha vencimiento carné</label>
@@ -836,12 +861,16 @@ function Usuarios() {
               <div className="Modal_Grid_Perfil">
                 <div className="Modal_Campo_Perfil">
                   <label>Tipo de RH</label>
-                  <input
-                    type="text"
-                    className="Modal_Input_Perfil"
+                  <select
+                    className="Modal_Select_Perfil"
                     value={formCrear.rh}
                     onChange={e => setFormCrear(prev => ({ ...prev, rh: e.target.value }))}
-                  />
+                  >
+                    <option value="">Seleccionar</option>
+                    {OPCIONES_RH.map(rh => (
+                      <option key={rh} value={rh}>{rh}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="Modal_Campo_Perfil">
                   <label>EPS</label>
@@ -886,6 +915,7 @@ function Usuarios() {
                     className="Modal_Input_Perfil"
                     value={formCrear.foto_url}
                     onChange={e => setFormCrear(prev => ({ ...prev, foto_url: e.target.value }))}
+                    placeholder="Opcional"
                   />
                 </div>
               </div>
@@ -905,13 +935,14 @@ function Usuarios() {
               </div>
             </div>
 
-            <button
-              className="Modal_Btn_Perfil"
-              onClick={handleCrearUsuario}
-              disabled={guardando}
-            >
-              {guardando ? 'Creando...' : 'CREAR USUARIO'}
-            </button>
+              <button
+                type="submit"
+                className="Modal_Btn_Perfil"
+                disabled={guardando}
+              >
+                {guardando ? 'Creando...' : 'CREAR USUARIO'}
+              </button>
+            </form>
             <button
               className="Modal_Cancelar_Perfil"
               onClick={() => setModalCrear(false)}

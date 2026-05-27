@@ -46,18 +46,30 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path='/Registro' element={<Registro />} />
           
-          {/* Ruta para instructores y contratistas */}
+          {/* Ruta para carnés (todos los roles) */}
           <Route 
             path="/Carnes" 
             element={
               <ErrorBoundary>
-                <ProtectedRouteByRole allowedRoles={['instructor', 'contratista']}>
+                <ProtectedRouteByRole allowedRoles={['funcionario', 'admin', 'instructor', 'contratista']}>
                   <Carnes />
                 </ProtectedRouteByRole>
               </ErrorBoundary>
             } 
           />
           
+          {/* Perfil accesible desde Carnes y desde rutas admin */}
+          <Route 
+            path="/Perfil"
+            element={
+              <ErrorBoundary>
+                <ProtectedRouteByRole allowedRoles={['funcionario', 'admin', 'instructor', 'contratista']}>
+                  <Perfil />
+                </ProtectedRouteByRole>
+              </ErrorBoundary>
+            }
+          />
+
           {/* Rutas protegidas (funcionarios y administradores) */}
           <Route 
             path="/*" 

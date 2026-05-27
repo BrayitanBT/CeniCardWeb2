@@ -14,11 +14,9 @@
 }
 
 .Perfil_Zona_Trabajo {
-  display: grid;
-  grid-template-columns: 320px 1fr;
-  gap: var(--space-8);
+  display: flex;
+  justify-content: center;
   padding: var(--space-8);
-  align-items: start;
 }
 
 /* Loading */
@@ -76,7 +74,7 @@
 /* Flip card */
 .Carnet_Flip_Wrapper {
   width: 280px;
-  height: 460px;
+  height: 455px;
   perspective: 1200px;
   cursor: pointer;
 }
@@ -89,12 +87,14 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transform-style: preserve-3d;
-  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.Carnet_Flip_Wrapper.volteado .Carnet_Flip_Inner {
+.Carnet_Flip_Wrapper.volteado .Carnet_Frente {
   transform: rotateY(180deg);
+}
+
+.Carnet_Flip_Wrapper.volteado .Carnet_Reverso {
+  transform: rotateY(0deg);
 }
 
 .Carnet_Cara {
@@ -106,40 +106,18 @@
   padding: var(--space-5);
   border: 1.5px solid var(--color-primary-100);
   box-shadow: var(--shadow-lg);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .Carnet_Reverso {
   transform: rotateY(180deg);
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .Carnet_Borde_Bloqueado {
   border-color: #fecaca !important;
-}
-
-/* Fecha animada */
-.Fecha_Anim_Container {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 5;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-}
-
-.Fecha_Anim_Badge {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  color: white;
-  font-size: 0.6rem;
-  font-weight: var(--font-weight-bold);
-  letter-spacing: 0.5px;
-  white-space: nowrap;
 }
 
 /* Frente */
@@ -155,37 +133,18 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: var(--space-3);
+  margin-bottom: 12px;
 }
 
-.Carnet_Logo_Sena {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-}
-
-.Logo_Sena_Text {
-  font-size: 1.2rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  letter-spacing: 2px;
-  line-height: 1;
-}
-
-.Logo_Sub_Text {
-  font-size: 0.55rem;
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-muted);
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
+.Carnet_Logo_Img {
+  width: 90px;
 }
 
 .Carnet_Foto_Box {
   width: 90px;
   height: 120px;
   background: var(--color-bg);
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -208,68 +167,68 @@
 
 .Carnet_Rol_Label {
   font-size: 0.6rem;
-  font-weight: var(--font-weight-bold);
+  font-weight: 800;
   letter-spacing: 1.5px;
-  color: var(--color-text-secondary);
-  margin: var(--space-1) 0 var(--space-2);
+  color: #555;
+  margin: 4px 0 6px;
 }
 
 .Carnet_Separador {
   height: 3px;
-  background: var(--color-primary);
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--space-3);
+  background: #2E7D32;
+  border-radius: 2px;
+  margin-bottom: 12px;
 }
 
 .Carnet_Separador_Delgado {
   height: 2px;
-  background: var(--color-primary);
-  border-radius: var(--radius-sm);
-  margin: var(--space-2) 0 var(--space-3);
+  background: #2E7D32;
+  border-radius: 2px;
+  margin: 8px 0 12px;
 }
 
 .Carnet_Nombre {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-primary);
-  margin: 0 0 var(--space-2);
-  line-height: var(--line-height-tight);
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2E7D32;
+  margin: 0 0 8px;
+  line-height: 1.2;
 }
 
 .Carnet_Campo {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-1);
+  font-size: 0.85rem;
+  color: #333;
+  margin-bottom: 5px;
 }
 
 .Carnet_Fecha_Row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: var(--space-1) 0 var(--space-3);
+  margin: 4px 0 10px;
   gap: var(--space-2);
 }
 
 .Carnet_Fecha_Badge {
-  background: var(--color-primary);
+  background: #2E7D32;
   color: white;
-  border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
-  font-size: 0.65rem;
-  font-weight: var(--font-weight-semibold);
+  border-radius: 10px;
+  padding: 6px 14px;
+  font-size: 0.6rem;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .Carnet_Regional {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-1);
+  font-size: 0.75rem;
+  color: #555;
+  margin-bottom: 4px;
 }
 
 .Carnet_Centro {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-primary);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #2E7D32;
 }
 
 /* Reverso */
@@ -278,24 +237,34 @@
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.Carnet_Reverso_Inner::-webkit-scrollbar {
+  width: 5px;
+}
+
+.Carnet_Reverso_Inner::-webkit-scrollbar-thumb {
+  background: #C8E6C9;
+  border-radius: 10px;
 }
 
 .Carnet_Reverso_Titulo {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
+  font-size: 1rem;
+  font-weight: 800;
   color: var(--color-text-primary);
   text-align: center;
-  margin-bottom: var(--space-3);
-  line-height: var(--line-height-tight);
+  margin-bottom: 12px;
+  line-height: 1.2;
 }
 
 .Carnet_Info_Row {
   display: flex;
   align-items: flex-start;
-  gap: var(--space-2);
-  background: var(--color-primary-50);
+  gap: var(--space-3);
+  background: #e5eee4a2;
   border-radius: var(--radius-md);
-  padding: var(--space-2);
+  padding: var(--space-3);
   margin-bottom: var(--space-2);
 }
 
@@ -304,11 +273,15 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: var(--color-primary-100);
+  background: #E8F5E9;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+}
+
+.Carnet_Info_Icon > svg {
+  color: #2E7D32;
 }
 
 .Carnet_Info_Textos {
@@ -318,17 +291,17 @@
 
 .Carnet_Info_Label {
   display: block;
-  font-size: 0.5rem;
-  font-weight: var(--font-weight-bold);
+  font-size: 0.65rem;
+  font-weight: 800;
   color: var(--color-text-muted);
   letter-spacing: 0.4px;
-  margin-bottom: 1px;
+  margin-bottom: 2px;
   text-transform: uppercase;
 }
 
 .Carnet_Info_Valor {
   display: block;
-  font-size: 0.65rem;
+  font-size: 0.85rem;
   color: var(--color-text-primary);
   word-break: break-word;
   line-height: var(--line-height);
@@ -343,54 +316,32 @@
 }
 
 .Carnet_Alerta_Box {
-  background: var(--color-warning-light);
-  border: 1px solid #fed7aa;
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
+  background: #FFF3E0;
+  border: 1px solid #FFCCBC;
+  border-radius: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-top: var(--space-3);
+  margin-top: 10px;
 }
 
-.Carnet_Alerta_Icon {
-  font-size: 1.8rem;
-  margin-bottom: var(--space-3);
+.Carnet_Alerta_Icono {
+  font-size: 2rem;
+  margin-bottom: 12px;
 }
 
 .Carnet_Alerta_Titulo {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #1A1A1A;
   text-align: center;
-  margin: 0 0 var(--space-3);
-  line-height: var(--line-height-tight);
-}
-
-.Carnet_Estado_Badge {
-  border-radius: var(--radius-md);
-  padding: var(--space-1) var(--space-4);
-  font-size: 0.7rem;
-  font-weight: var(--font-weight-bold);
-  color: white;
-  margin-bottom: var(--space-3);
-}
-
-.Carnet_Estado_Badge.bloqueado {
-  background: var(--color-error);
-}
-
-.Carnet_Estado_Badge.prestamo {
-  background: #ea580c;
-}
-
-.Carnet_Estado_Badge.vencido {
-  background: var(--color-text-muted);
+  margin: 0 0 10px;
 }
 
 .Carnet_Alerta_Desc {
-  font-size: var(--font-size-xs);
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   text-align: center;
   line-height: var(--line-height);
@@ -402,41 +353,6 @@
   flex-direction: column;
   gap: var(--space-3);
   width: 100%;
-}
-
-.Btn_Estado_Carne {
-  width: 100%;
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-semibold);
-  font-size: var(--font-size-sm);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  border: 1.5px solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-}
-
-.Btn_Estado_Carne.bloquear {
-  background: white;
-  color: var(--color-error);
-  border-color: var(--color-error);
-}
-
-.Btn_Estado_Carne.bloquear:hover {
-  background: var(--color-error-light);
-}
-
-.Btn_Estado_Carne.desbloquear {
-  background: var(--color-primary);
-  color: white;
-  border-color: var(--color-primary);
-}
-
-.Btn_Estado_Carne.desbloquear:hover {
-  background: var(--color-primary-dark);
 }
 
 .Btn_Editar_Perfil_Carnet {
@@ -673,7 +589,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: var(--z-modal);
   animation: fadeIn 0.2s ease;
   padding: var(--space-4);
 }
@@ -885,13 +801,9 @@
 
 /* Tablet */
 @media (max-width: 1200px) {
-  .Perfil_Zona_Trabajo {
-    grid-template-columns: 280px 1fr;
-  }
-
   .Carnet_Flip_Wrapper {
-    width: 250px;
-    height: 410px;
+    width: 260px;
+    height: 425px;
   }
 }
 
@@ -903,10 +815,6 @@
 
 /* Móvil grande */
 @media (max-width: 900px) {
-  .Perfil_Zona_Trabajo {
-    grid-template-columns: 1fr;
-  }
-
   .Perfil_Panel_Carnet {
     position: static;
   }
@@ -917,7 +825,7 @@
   }
 
   .Carnet_Acciones {
-    max-width: 260px;
+    max-width: 320px;
     margin: 0 auto;
   }
 }
@@ -949,7 +857,6 @@
 @media (max-width: 480px) {
   .Perfil_Zona_Trabajo {
     padding: var(--space-4);
-    gap: var(--space-6);
   }
 
   .Perfil_Carnet_Titulo h2 {
@@ -968,16 +875,6 @@
 
   .Carnet_Nombre {
     font-size: var(--font-size-sm);
-  }
-
-  .Perfil_Info_Header {
-    flex-direction: column;
-    text-align: center;
-    gap: var(--space-4);
-  }
-
-  .Perfil_Info_Header_Text {
-    text-align: center;
   }
 
   .Modal_Card_Perfil {

@@ -1,5 +1,18 @@
 import { supabase } from '../supabaseClient'
 import { formatearNombreCompleto } from './utils'
+import { createNotificacion } from './notificacionService'
+
+async function notificarAdmins(tipo, titulo, descripcion) {
+  try {
+    await supabase.rpc('crear_notificaciones_admin', {
+      p_tipo: tipo,
+      p_titulo: titulo,
+      p_descripcion: descripcion || null
+    })
+  } catch (e) {
+    console.error('Error notificando a administradores:', e)
+  }
+}
 
 export async function getPrestamos() {
   const { data, error } = await supabase
@@ -81,6 +94,17 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
       throw updateError
     }
 
+    try {
+      await createNotificacion({
+        usuario_id: prestamo.usuario_id,
+        tipo: 'prestamo_aceptado',
+        titulo: 'Préstamo aprobado',
+        descripcion: 'Tu solicitud de préstamo ha sido aprobada'
+      })
+    } catch (e) {
+      console.error('Error notificando al usuario:', e)
+    }
+
     return { success: true, message: 'Préstamo aprobado correctamente' }
 
   } catch (error) {
@@ -91,7 +115,7 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
 
 export async function rechazarPrestamo(id, motivo_rechazo, gestionado_por_id) {
   try {
-    const { error: getError } = await supabase
+    const { data: prestamo, error: getError } = await supabase
       .from('prestamos')
       .select('equipo_id, usuario_id')
       .eq('id', id)
@@ -114,6 +138,17 @@ export async function rechazarPrestamo(id, motivo_rechazo, gestionado_por_id) {
     if (updateError) {
       console.error('Error actualizando préstamo:', updateError)
       throw updateError
+    }
+
+    try {
+      await createNotificacion({
+        usuario_id: prestamo.usuario_id,
+        tipo: 'prestamo_rechazado',
+        titulo: 'Préstamo rechazado',
+        descripcion: motivo_rechazo || 'Tu solicitud de préstamo ha sido rechazada'
+      })
+    } catch (e) {
+      console.error('Error notificando al usuario:', e)
     }
     
     return { success: true, message: 'Préstamo rechazado correctamente' }
@@ -144,6 +179,17 @@ export async function devolverEquipo(id, gestionado_por_id) {
       .eq('id', id)
 
     if (updateError) throw updateError
+
+    try {
+      await createNotificacion({
+        usuario_id: prestamo.usuario_id,
+        tipo: 'equipo_devuelto',
+        titulo: 'Equipo devuelto',
+        descripcion: 'El equipo prestado ha sido devuelto correctamente'
+      })
+    } catch (e) {
+      console.error('Error notificando al usuario:', e)
+    }
 
     return { success: true }
 
@@ -189,7 +235,36 @@ export async function crearSolicitudPrestamo(usuarioId, equipoId, fechaDevolucio
 
     if (error) throw error
 
-    return data[0]
+    const prestamo = data[0]
+
+    const { data: datosUsuario } = await supabase
+      .from('usuarios')
+      .select('primer_nombre, primer_apellido')
+      .eq('id', usuarioId)
+      .single()
+
+    const nombreUsuario = datosUsuario
+      ? `${datosUsuario.primer_nombre} ${datosUsuario.primer_apellido}`
+      : 'Un usuario'
+
+    await notificarAdmins(
+      'prestamo_creado',
+      'Nueva solicitud de préstamo',
+      `${nombreUsuario} ha solicitado un préstamo`
+    )
+
+    try {
+      await createNotificacion({
+        usuario_id: usuarioId,
+        tipo: 'prestamo_creado',
+        titulo: 'Solicitud creada',
+        descripcion: 'Tu solicitud de préstamo está pendiente de aprobación'
+      })
+    } catch (e) {
+      console.error('Error notificando al usuario:', e)
+    }
+
+    return prestamo
   } catch (error) {
     console.error('Error creando solicitud de préstamo:', error)
     throw error

@@ -46,33 +46,36 @@
 }
 
 .Btn_Historial {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
-  border: none;
-  padding: var(--space-2) var(--space-5);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-bold);
-  cursor: pointer;
-  text-decoration: none;
-  font-size: var(--font-size-sm);
-  color: white !important;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 15px rgba(0, 120, 50, 0.3);
   display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
+  gap: 8px;
+  background: #007832;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 120, 50, 0.25);
+  line-height: 1;
+  letter-spacing: 0.3px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .Btn_Historial:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.4);
-  filter: brightness(1.1);
+  box-shadow: 0 6px 20px rgba(0, 120, 50, 0.15);
 }
 
-.Btn_Historial:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
+.Btn_Historial svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.Btn_Historial span {
+  color: inherit;
 }
 
 .Btn_Añadir_Solicitud {
