@@ -531,21 +531,7 @@ function Perfil() {
                       ))}
                     </select>
                   </div>
-                  <div className="Modal_Campo_Perfil">
-                    <label>Rol</label>
-                    <select
-                      className="Modal_Select_Perfil"
-                      value={formPerfil.rol}
-                      onChange={e => setFormPerfil(prev => ({ ...prev, rol: e.target.value }))}
-                    >
-                      <option value="">Seleccionar rol...</option>
-                      <option value="aprendiz">Aprendiz</option>
-                      <option value="instructor">Instructor</option>
-                      <option value="contratista">Contratista</option>
-                      <option value="funcionario">Funcionario</option>
-                      <option value="admin">Administrador</option>
-                    </select>
-                  </div>
+
                 </div>
               </div>
 
