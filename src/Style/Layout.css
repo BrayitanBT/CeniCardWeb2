@@ -27,14 +27,6 @@
   position: relative;
 }
 
-.Layout_Overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: var(--z-overlay);
-  animation: fadeIn 0.2s ease;
-}
-
 /* Desktop: sidebar expandido */
 @media (min-width: 1024px) {
   .Layout_Content {

@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 import { formatearNombreCompleto } from './utils'
 
 const ROLES_PERMITIDOS = ['funcionario', 'admin', 'instructor', 'contratista']
@@ -13,13 +14,12 @@ export async function loginConDocumento(documento, contrasena) {
       return { data: null, error: new Error('Por favor, ingresa tu contraseña.') }
     }
 
-    // Usa RPC con SECURITY DEFINER para evitar recursión infinita de RLS
     const { data: usuario, error: buscarError } = await supabase
       .rpc('get_user_by_documento', { p_documento: documento.trim() })
       .maybeSingle()
 
     if (buscarError) {
-      console.error('Error buscando usuario:', buscarError)
+      logError(buscarError, 'authService.loginConDocumento')
       return { 
         data: null, 
         error: new Error('Error al verificar el documento. Intenta de nuevo.') 
@@ -60,7 +60,7 @@ export async function loginConDocumento(documento, contrasena) {
     })
 
     if (loginError) {
-      console.error('Error de autenticación:', loginError)
+      logError(loginError, 'authService.loginConDocumento')
       
       if (loginError.message.includes('Invalid login credentials')) {
         return { 
@@ -96,7 +96,7 @@ export async function loginConDocumento(documento, contrasena) {
     }
     
   } catch (error) {
-    console.error('Error inesperado en login:', error)
+    logError(error, 'authService.loginConDocumento')
     return { 
       data: null, 
       error: new Error('Ocurrió un error inesperado. Por favor, intenta de nuevo más tarde.') 
@@ -160,13 +160,13 @@ export async function registrarUsuario(userData) {
       .select()
 
     if (profileError) {
-      console.error('Error creando perfil:', profileError)
+      logError(profileError, 'authService.registrarUsuario')
       throw profileError
     }
 
     return { user: authData.user, profile: profileData[0] }
   } catch (error) {
-    console.error('Error en registro:', error)
+    logError(error, 'authService.registrarUsuario')
     throw error
   }
 }
@@ -177,7 +177,7 @@ export async function obtenerSesionActual() {
     if (error || !data.session) return null
     return data.session
   } catch (error) {
-    console.error('Error obteniendo sesión:', error)
+    logError(error, 'authService.obtenerSesionActual')
     return null
   }
 }
@@ -187,7 +187,7 @@ export async function cerrarSesion() {
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   } catch (error) {
-    console.error('Error cerrando sesión:', error)
+    logError(error, 'authService.cerrarSesion')
     throw error
   }
 }
@@ -203,7 +203,7 @@ export async function obtenerPerfilUsuario(userId) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo perfil:', error)
+    logError(error, 'authService.obtenerPerfilUsuario')
     return null
   }
   
@@ -239,7 +239,7 @@ export async function actualizarPerfilUsuario(userId, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando perfil:', error)
+    logError(error, 'authService.actualizarPerfilUsuario')
     throw error
   }
   return data[0]

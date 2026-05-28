@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './Context/AuthProvider.jsx'
 import Login from "./Components/Login"
-import Registro from './Components/Registro'
 import Principal from './Components/Principal.jsx'
 import MenuLateral from './Components/Menu.jsx'
 import Header from './Components/Header.jsx'
@@ -44,7 +43,6 @@ function App() {
         <Routes>
           {/* Rutas públicas */}
           <Route path="/" element={<Login />} />
-          <Route path='/Registro' element={<Registro />} />
           
           {/* Ruta para carnés (todos los roles) */}
           <Route 

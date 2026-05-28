@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 import { formatearNombreCompleto } from './utils'
 
 export async function getHistorial(filtros = {}) {
@@ -35,7 +36,7 @@ export async function getHistorial(filtros = {}) {
   const { data, error } = await query.order('updated_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo historial:', error)
+    logError(error, 'historialService.getHistorial')
     return []
   }
   

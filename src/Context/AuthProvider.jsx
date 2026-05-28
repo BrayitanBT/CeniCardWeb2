@@ -1,6 +1,7 @@
 // AuthProvider.jsx
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabaseClient";
+import { logError } from "../services/errorService";
 import { AuthContext } from "./AuthContext";
 
 export function AuthProvider({ children }) {
@@ -14,7 +15,7 @@ export function AuthProvider({ children }) {
       setRol(localStorage.getItem('user_rol') || '');
       setLoading(false);
     }).catch((err) => {
-      console.error('Error obteniendo sesión inicial:', err);
+      logError(err, 'AuthProvider.getSession');
       setUser(null);
       setRol('');
       setLoading(false);
@@ -26,7 +27,7 @@ export function AuthProvider({ children }) {
         setRol(localStorage.getItem('user_rol') || '');
       },
       (error) => {
-        console.error('Error en auth state change:', error);
+        logError(error, 'AuthProvider.onAuthStateChange');
       }
     );
 

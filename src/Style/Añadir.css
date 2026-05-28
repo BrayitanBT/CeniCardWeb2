@@ -44,6 +44,52 @@
   gap: var(--space-4);
 }
 
+.Header_Row_A {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Badge_Green_A {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.Celda_Vacia_A {
+  text-align: center;
+  padding: 40px;
+}
+
+.Tiempo_Transcurrido_A {
+  color: #666;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.Summary_Bar_A {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Summary_Stats_A {
+  display: flex;
+  gap: 15px;
+}
+
+.Summary_Count_A strong {
+  color: #ffc107;
+}
+
 .Tag_Entregados {
   color: white;
   font-weight: var(--font-weight-bold);
@@ -206,6 +252,49 @@
 }
 
 /* Móvil pequeño */
+.Paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 16px;
+}
+
+.Btn_Pagina {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.Btn_Pagina:hover:not(:disabled) {
+  color: #2E7D32;
+  background: #f0faf0;
+}
+
+.Btn_Pagina.activo {
+  background: linear-gradient(135deg, #2E7D32, #388E3C);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.25);
+  transform: scale(1.05);
+}
+
+.Btn_Pagina:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
 @media (max-width: 480px) {
   .Zona_Trabajo_Añadir {
     padding: var(--space-3);

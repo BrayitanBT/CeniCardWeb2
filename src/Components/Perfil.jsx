@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from './Layout';
 import { useAuth } from '../Context/AuthContext';
 import { obtenerPerfilUsuario } from '../services/authService';
+import { logError } from '../services/errorService';
 import { supabase } from '../supabaseClient';
+import { subirFoto } from '../services/storageService';
 import Swal from 'sweetalert2';
 import { FaUsers, FaPlus, FaPhoneAlt, FaHeart, FaUserFriends, FaCog } from 'react-icons/fa';
 import LogoSena from "../Img/logoSena.png";
@@ -41,6 +43,7 @@ function Perfil() {
   });
   const [modalEditar, setModalEditar] = useState(false);
   const [guardandoPerfil, setGuardandoPerfil] = useState(false);
+  const [fotoFilePerfil, setFotoFilePerfil] = useState(null);
   const [centrosFormacion, setCentrosFormacion] = useState([]);
   const [cargandoOpciones, setCargandoOpciones] = useState(false);
   const [formPerfil, setFormPerfil] = useState(null);
@@ -60,7 +63,7 @@ function Perfil() {
       }
       setPerfil(data);
     } catch (error) {
-      console.error('Error cargando perfil:', error);
+      logError(error, 'Perfil.cargarPerfil');
       setPerfil(null);
     } finally {
       setLoading(false);
@@ -81,7 +84,7 @@ function Perfil() {
       setCentrosFormacion(centrosUnicos);
 
     } catch (error) {
-      console.error('Error al cargar opciones:', error);
+      logError(error, 'Perfil.cargarOpcionesFormacion');
     } finally {
       setCargandoOpciones(false);
     }
@@ -135,6 +138,10 @@ function Perfil() {
     e?.preventDefault();
     setGuardandoPerfil(true);
     try {
+      let fotoUrl = formPerfil.foto_url;
+      if (fotoFilePerfil) {
+        fotoUrl = await subirFoto(fotoFilePerfil, user.id);
+      }
       const { error } = await supabase
         .from('usuarios')
         .update({
@@ -146,7 +153,7 @@ function Perfil() {
           correo: formPerfil.correo?.trim() || null,
           celular: formPerfil.celular.trim() || null,
           rh: formPerfil.rh.trim() || null,
-          foto_url: formPerfil.foto_url.trim() || null,
+          foto_url: fotoUrl,
           centro_formacion: formPerfil.centro_formacion.trim() || null,
           rol: formPerfil.rol.trim() || null,
           eps: formPerfil.eps.trim() || null,
@@ -161,9 +168,10 @@ function Perfil() {
 
       await cargarPerfil();
       setModalEditar(false);
+      setFotoFilePerfil(null);
       Swal.fire('Guardado', 'Perfil actualizado correctamente', 'success');
     } catch (error) {
-      console.error('Error al actualizar perfil:', error);
+      logError(error, 'Perfil.handleGuardarPerfil');
       Swal.fire('Error', 'No se pudo actualizar el perfil', 'error');
     } finally {
       setGuardandoPerfil(false);
@@ -497,14 +505,39 @@ function Perfil() {
                   </div>
                 </div>
                 <div className="Modal_Campo_Perfil">
-                  <label>URL de foto</label>
-                  <input
-                    type="url"
-                    className="Modal_Input_Perfil"
-                    placeholder="https://ejemplo.com/mi-foto.jpg"
-                    value={formPerfil.foto_url}
-                    onChange={e => setFormPerfil(prev => ({ ...prev, foto_url: e.target.value }))}
-                  />
+                  <label>Foto de perfil</label>
+                  {formPerfil.foto_url && !fotoFilePerfil && (
+                    <img src={formPerfil.foto_url} alt="Vista previa" className="Foto_Preview" />
+                  )}
+                  {fotoFilePerfil && (
+                    <img src={formPerfil.foto_url} alt="Vista previa" className="Foto_Preview" />
+                  )}
+                  <div className="Foto_Upload_Wrapper">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="foto-perfil"
+                      className="Foto_Upload_Input"
+                      onChange={e => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setFotoFilePerfil(file);
+                          const reader = new FileReader();
+                          reader.onload = (ev) => setFormPerfil(prev => ({ ...prev, foto_url: ev.target.result }));
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <label htmlFor="foto-perfil" className="Foto_Upload_Label">
+                      <span className="Foto_Upload_Icono">📷</span>
+                      <span>{fotoFilePerfil ? fotoFilePerfil.name : (formPerfil.foto_url ? 'Cambiar foto' : 'Seleccionar archivo')}</span>
+                    </label>
+                  </div>
+                  {(fotoFilePerfil || formPerfil.foto_url) && (
+                    <button type="button" className="Opcional_Quitar" onClick={() => { setFotoFilePerfil(null); setFormPerfil(prev => ({ ...prev, foto_url: '' })); }}>
+                      Quitar foto
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -512,7 +545,7 @@ function Perfil() {
               <div className="Modal_Seccion_Perfil">
                 <h3 className="Modal_Seccion_Titulo">🏢 Información Institucional</h3>
                 {cargandoOpciones && (
-                  <p style={{ fontSize: '0.8rem', color: '#666', textAlign: 'center', margin: '10px 0' }}>
+                  <p className="Loading_Options">
                     Cargando opciones disponibles...
                   </p>
                 )}

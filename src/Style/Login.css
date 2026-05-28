@@ -205,6 +205,73 @@
   box-shadow: 0 2px 8px rgba(0, 120, 50, 0.3);
 }
 
+.Login_Loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+  font-size: 18px;
+}
+
+.Login_Error {
+  color: #dc3545;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 0 0 var(--space-4) 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.Password_Wrapper {
+  position: relative;
+}
+
+.Password_Input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.Password_Toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.Password_Toggle:hover {
+  opacity: 1;
+}
+
+.btn_Ingresar:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.Spinner_Login {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .Enlace {
   text-decoration: none;
   color: var(--color-primary);

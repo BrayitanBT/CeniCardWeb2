@@ -247,36 +247,66 @@
   transform: scale(1.1);
 }
 
-.Estado_Punto.pendiente {
-  color: var(--color-warning);
+.Estado_Punto {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
-.Estado_Punto.pendiente::before {
-  background: var(--color-warning);
+.Celda_Vacia_S {
+  text-align: center;
+  padding: 40px;
+}
+
+.Resumen_Solicitudes {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.Resumen_Stats {
+  display: flex;
+  gap: 15px;
+}
+
+.Resumen_Count_Pendiente {
+  color: #ffc107;
+}
+
+.Resumen_Count_Aprobado {
+  color: #28a745;
+}
+
+.Estado_Punto.pendiente {
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #f59e0b;
 }
 
 .Estado_Punto.aceptado {
-  color: var(--color-success);
-}
-
-.Estado_Punto.aceptado::before {
-  background: var(--color-success);
+  background: #e8f5e9;
+  color: #007832;
+  border: 1px solid #007832;
 }
 
 .Estado_Punto.rechazado {
-  color: var(--color-error);
-}
-
-.Estado_Punto.rechazado::before {
-  background: var(--color-error);
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #dc2626;
 }
 
 .Estado_Punto.devuelto {
-  color: var(--color-text-muted);
-}
-
-.Estado_Punto.devuelto::before {
-  background: var(--color-text-muted);
+  background: #e8f5e9;
+  color: #007832;
+  border: 1px solid #007832;
 }
 
 @keyframes pulse {
@@ -379,4 +409,47 @@ tbody tr td[colspan="7"] {
   .Contenedor_Tabla_Solicitudes {
     padding: var(--space-3);
   }
+}
+
+.Paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 16px;
+}
+
+.Btn_Pagina {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.Btn_Pagina:hover:not(:disabled) {
+  color: #2E7D32;
+  background: #f0faf0;
+}
+
+.Btn_Pagina.activo {
+  background: linear-gradient(135deg, #2E7D32, #388E3C);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.25);
+  transform: scale(1.05);
+}
+
+.Btn_Pagina:disabled {
+  opacity: 0.25;
+  cursor: default;
 }

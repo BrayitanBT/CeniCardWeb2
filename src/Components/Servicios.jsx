@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Layout from './Layout';
 import { 
   getNoticias, 
@@ -16,7 +16,10 @@ import {
 import { useAuth } from '../Context/AuthContext';
 import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
+import { renderIcon } from '../utils/iconRenderer.jsx';
 import '../Style/Servicios.css';
+
+const ITEMS_PER_PAGE = 2
 
 function Servicios() {
   const { user } = useAuth();
@@ -34,6 +37,8 @@ function Servicios() {
   const [searchEquipoTerm, setSearchEquipoTerm] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [noticiaPage, setNoticiaPage] = useState(1);
+  const [equipoPage, setEquipoPage] = useState(1);
 
   const [formNoticia, setFormNoticia] = useState({
     titulo: '',
@@ -85,35 +90,48 @@ function Servicios() {
       setEquipos(equiposData);
       setCategorias(categoriasData);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Servicios.cargarDatos'), 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  const noticiasFiltradas = noticias.filter(noticia => {
-    const searchMatch = searchNoticiaTerm === '' ||
-      noticia.titulo?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
-      noticia.descripcion?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
-      (noticia.autor_nombre && noticia.autor_nombre.toLowerCase().includes(searchNoticiaTerm.toLowerCase()));
-    
-    return searchMatch;
-  });
+  const noticiasFiltradas = useMemo(() =>
+    noticias.filter(noticia => {
+      const searchMatch = searchNoticiaTerm === '' ||
+        noticia.titulo?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
+        noticia.descripcion?.toLowerCase().includes(searchNoticiaTerm.toLowerCase()) ||
+        (noticia.autor_nombre && noticia.autor_nombre.toLowerCase().includes(searchNoticiaTerm.toLowerCase()));
+      return searchMatch;
+    }),
+    [noticias, searchNoticiaTerm]
+  )
 
-  const equiposFiltrados = equipos.filter(equipo => {
-    const searchMatch = searchEquipoTerm === '' || 
-      equipo.numero.toString().includes(searchEquipoTerm) ||
-      equipo.marca?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
-      equipo.modelo?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
-      equipo.serial?.toLowerCase().includes(searchEquipoTerm.toLowerCase());
-    
-    const categoriaMatch = filtroCategoria === '' || 
-      equipo.categoria_id.toString() === filtroCategoria;
-    
-    const estadoMatch = filtroEstado === '' || equipo.estado === filtroEstado;
-    
-    return searchMatch && categoriaMatch && estadoMatch;
-  });
+  const equiposFiltrados = useMemo(() =>
+    equipos.filter(equipo => {
+      const searchMatch = searchEquipoTerm === '' || 
+        equipo.numero.toString().includes(searchEquipoTerm) ||
+        equipo.marca?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
+        equipo.modelo?.toLowerCase().includes(searchEquipoTerm.toLowerCase()) ||
+        equipo.serial?.toLowerCase().includes(searchEquipoTerm.toLowerCase());
+      const categoriaMatch = filtroCategoria === '' || 
+        equipo.categoria_id.toString() === filtroCategoria;
+      const estadoMatch = filtroEstado === '' || equipo.estado === filtroEstado;
+      return searchMatch && categoriaMatch && estadoMatch;
+    }),
+    [equipos, searchEquipoTerm, filtroCategoria, filtroEstado]
+  )
+
+  const noticiaTotalPages = Math.max(1, Math.ceil(noticiasFiltradas.length / ITEMS_PER_PAGE))
+  const equipoTotalPages = Math.max(1, Math.ceil(equiposFiltrados.length / ITEMS_PER_PAGE))
+
+  const noticiasPaginadas = noticiasFiltradas.slice((noticiaPage - 1) * ITEMS_PER_PAGE, noticiaPage * ITEMS_PER_PAGE)
+  const equiposPaginados = equiposFiltrados.slice((equipoPage - 1) * ITEMS_PER_PAGE, equipoPage * ITEMS_PER_PAGE)
+
+  const equipoStart = Math.max(1, Math.min(equipoPage - 2, equipoTotalPages - 4))
+
+  useEffect(() => { setNoticiaPage(1) }, [searchNoticiaTerm])
+  useEffect(() => { setEquipoPage(1) }, [searchEquipoTerm, filtroCategoria, filtroEstado])
 
   const handleSubmitNoticia = async (e) => {
     e.preventDefault();
@@ -137,7 +155,7 @@ function Servicios() {
       
       Swal.fire('Éxito', 'Noticia publicada correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Servicios.crearNoticia'), 'error');
     }
   };
 
@@ -169,7 +187,7 @@ function Servicios() {
       
       Swal.fire('Éxito', 'Equipo agregado correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Servicios.crearEquipo'), 'error');
     }
   };
 
@@ -191,7 +209,7 @@ function Servicios() {
         await cargarDatos();
         Swal.fire('Eliminado', 'La noticia ha sido eliminada', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Servicios.eliminarNoticia'), 'error');
       }
     }
   };
@@ -214,7 +232,7 @@ function Servicios() {
         await cargarDatos();
         Swal.fire('Eliminado', 'El equipo ha sido eliminado', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Servicios.eliminarEquipo'), 'error');
       }
     }
   };
@@ -243,7 +261,7 @@ function Servicios() {
       setEditandoNoticiaId(null);
       Swal.fire('Éxito', 'Noticia actualizada correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Servicios.editarNoticia'), 'error');
     }
   };
 
@@ -278,7 +296,7 @@ function Servicios() {
       setEditandoEquipoId(null);
       Swal.fire('Éxito', 'Equipo actualizado correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Servicios.editarEquipo'), 'error');
     }
   };
 
@@ -333,59 +351,46 @@ function Servicios() {
 
             <div className="Lista_Items">
               {loading ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
+                <div className="Mensaje_Carga">
                   Cargando noticias...
                 </div>
               ) : noticiasFiltradas.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                <div className="Mensaje_Vacio">
                   No se encontraron noticias
                 </div>
               ) : (
-                noticiasFiltradas.map((noticia) => (
+                noticiasPaginadas.map((noticia) => (
                   <div className="Card_Noticia" key={noticia.id}>
                     <div className="Icono_Noticia_Container">📰</div>
                     <div className="Info_Noticia">
                       <span className="Tag_Verde">
                         {noticia.publicado ? 'Publicado' : 'Borrador'}
                       </span>
-                      <h4>{noticia.titulo}</h4>
+                      <h4>#{noticia.id} - {noticia.titulo}</h4>
                       <p>{noticia.descripcion}</p>
-                      <small style={{ color: '#666' }}>
+                      <small className="Texto_Small_Noticia">
                         {formatearFecha(noticia.created_at)} - {noticia.autor_nombre || 'Sistema'}
                       </small>
-                      <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
-                        <button 
-                          onClick={() => abrirEditarNoticia(noticia)}
-                          style={{
-                            background: '#007832',
-                            color: 'white',
-                            border: 'none',
-                            padding: '5px 10px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
+                      <div className="Btn_Group">
+                        <button className="Btn_Editar" onClick={() => abrirEditarNoticia(noticia)}>
                           Editar
                         </button>
-                        <button 
-                          onClick={() => handleDeleteNoticia(noticia.id)}
-                          style={{
-                            background: '#dc3545',
-                            color: 'white',
-                            border: 'none',
-                            padding: '5px 10px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
+                        <button className="Btn_Eliminar" onClick={() => handleDeleteNoticia(noticia.id)}>
                           Eliminar
                         </button>
                       </div>
                     </div>
                   </div>
                 ))
+              )}
+              {noticiaTotalPages > 1 && (
+                <div className="Paginacion">
+                  <button className="Btn_Pagina" onClick={() => setNoticiaPage(p => Math.max(1, p - 1))} disabled={noticiaPage === 1}>‹</button>
+                  {Array.from({ length: noticiaTotalPages }, (_, i) => i + 1).map(p => (
+                    <button key={p} className={`Btn_Pagina ${p === noticiaPage ? 'activo' : ''}`} onClick={() => setNoticiaPage(p)}>{p}</button>
+                  ))}
+                  <button className="Btn_Pagina" onClick={() => setNoticiaPage(p => Math.min(noticiaTotalPages, p + 1))} disabled={noticiaPage === noticiaTotalPages}>›</button>
+                </div>
               )}
             </div>
           </div>
@@ -435,23 +440,23 @@ function Servicios() {
 
             <div className="Lista_Items">
               {loading ? (
-                <div style={{ textAlign: 'center', padding: '20px' }}>
+                <div className="Mensaje_Carga">
                   Cargando equipos...
                 </div>
               ) : equiposFiltrados.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
+                <div className="Mensaje_Vacio">
                   No se encontraron equipos
                 </div>
               ) : (
-                equiposFiltrados.map((equipo) => (
+                <>
+                {equiposPaginados.map((equipo) => (
                   <div className="Card_Recurso" key={equipo.id}>
                     <div className="Icono_Recurso_Container">
-                      <span>{equipo.categorias_equipos?.icono || '💻'}</span>
-                      <strong>{equipo.numero}</strong>
+                      {renderIcon(equipo.categorias_equipos?.icono, 36) || <span>💻</span>}
                     </div>
                     <div className="Detalle_Recurso">
                       <div className="Top_Recurso">
-                        <h4>{equipo.marca} {equipo.modelo}</h4>
+                        <h4>#{equipo.id} - {equipo.marca} {equipo.modelo}</h4>
                         <span className="Tag_Verde_Min">
                           {equipo.categorias_equipos?.nombre || 'Sin categoría'}
                         </span>
@@ -463,39 +468,30 @@ function Servicios() {
                           {getEstadoTexto(equipo.estado)}
                         </span>
                       </div>
-                      <div style={{ marginTop: '10px', display: 'flex', gap: '8px' }}>
-                        <button 
-                          onClick={() => abrirEditarEquipo(equipo)}
-                          style={{
-                            background: '#007832',
-                            color: 'white',
-                            border: 'none',
-                            padding: '5px 10px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
+                      <div className="Btn_Group">
+                        <button className="Btn_Editar" onClick={() => abrirEditarEquipo(equipo)}>
                           Editar
                         </button>
-                        <button 
-                          onClick={() => handleDeleteEquipo(equipo.id)}
-                          style={{
-                            background: '#dc3545',
-                            color: 'white',
-                            border: 'none',
-                            padding: '5px 10px',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontSize: '12px'
-                          }}
-                        >
+                        <button className="Btn_Eliminar" onClick={() => handleDeleteEquipo(equipo.id)}>
                           Eliminar
                         </button>
                       </div>
                     </div>
                   </div>
-                ))
+                  ))
+                }
+                {equipoTotalPages > 1 && (
+                  <div className="Paginacion">
+                    <button className="Btn_Pagina" onClick={() => setEquipoPage(p => Math.max(1, p - 1))} disabled={equipoPage === 1}>‹</button>
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const p = equipoStart + i
+                      if (p > equipoTotalPages) return null
+                      return <button key={p} className={`Btn_Pagina ${p === equipoPage ? 'activo' : ''}`} onClick={() => setEquipoPage(p)}>{p}</button>
+                    })}
+                    <button className="Btn_Pagina" onClick={() => setEquipoPage(p => Math.min(equipoTotalPages, p + 1))} disabled={equipoPage === equipoTotalPages}>›</button>
+                  </div>
+                )}
+              </>
               )}
             </div>
           </div>

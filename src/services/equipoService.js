@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 
 async function notificarAdmins(tipo, titulo, descripcion) {
   try {
@@ -8,7 +9,7 @@ async function notificarAdmins(tipo, titulo, descripcion) {
       p_descripcion: descripcion || null
     })
   } catch (e) {
-    console.error('Error notificando a administradores:', e)
+    logError(e, 'equipoService.notificarAdmins')
   }
 }
 
@@ -22,7 +23,7 @@ export async function getEquipos() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo equipos:', error)
+    logError(error, 'equipoService.getEquipos')
     return []
   }
   return data
@@ -40,7 +41,7 @@ export async function getEquiposByCategoria(categoriaId) {
     .order('numero', { ascending: true })
 
   if (error) {
-    console.error('Error obteniendo equipos por categoría:', error)
+    logError(error, 'equipoService.getEquiposByCategoria')
     return []
   }
   return data
@@ -58,7 +59,7 @@ export async function getEquiposDisponibles() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo equipos disponibles:', error)
+    logError(error, 'equipoService.getEquiposDisponibles')
     return []
   }
   return data
@@ -75,7 +76,7 @@ export async function getEquipoById(id) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo equipo:', error)
+    logError(error, 'equipoService.getEquipoById')
     return null
   }
   return data
@@ -98,7 +99,7 @@ export async function createEquipo(equipo) {
     .select()
 
   if (error) {
-    console.error('Error creando equipo:', error)
+    logError(error, 'equipoService.createEquipo')
     throw error
   }
 
@@ -129,7 +130,7 @@ export async function updateEquipo(id, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando equipo:', error)
+    logError(error, 'equipoService.updateEquipo')
     throw error
   }
   return data[0]
@@ -152,7 +153,7 @@ export async function deleteEquipo(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando equipo:', error)
+    logError(error, 'equipoService.deleteEquipo')
     throw error
   }
 }
@@ -165,7 +166,7 @@ export async function getCategoriasEquipos() {
     .order('nombre', { ascending: true })
 
   if (error) {
-    console.error('Error obteniendo categorías:', error)
+    logError(error, 'equipoService.getCategoriasEquipos')
     return []
   }
   return data
@@ -179,7 +180,7 @@ export async function getCategoriaById(id) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo categoría:', error)
+    logError(error, 'equipoService.getCategoriaById')
     return null
   }
   return data
@@ -197,7 +198,7 @@ export async function createCategoria(categoria) {
     .select()
 
   if (error) {
-    console.error('Error creando categoría:', error)
+    logError(error, 'equipoService.createCategoria')
     throw error
   }
   return data[0]
@@ -220,7 +221,7 @@ export async function updateCategoria(id, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando categoría:', error)
+    logError(error, 'equipoService.updateCategoria')
     throw error
   }
   return data[0]
@@ -243,7 +244,7 @@ export async function deleteCategoria(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando categoría:', error)
+    logError(error, 'equipoService.deleteCategoria')
     throw error
   }
 }

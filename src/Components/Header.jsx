@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Context/AuthContext';
 import { cerrarSesion, obtenerPerfilUsuario } from '../services/authService';
-import { handleApiError } from '../services/errorService';
-import { getNotificacionesNoLeidas, getNotificaciones, marcarNotificacionLeida, marcarTodasNotificacionesLeidas } from '../services/notificacionService';
+import { handleApiError, logError } from '../services/errorService';
+import { getNotificacionesNoLeidas, getNotificaciones, marcarNotificacionLeida, marcarTodasNotificacionesLeidas, eliminarNotificacionesAntiguas } from '../services/notificacionService';
 import { supabase } from '../supabaseClient';
 import Swal from 'sweetalert2';
 import "../Style/Header.css";
@@ -30,7 +30,7 @@ function Header({ onToggleSidebar }) {
       setNotificaciones(todas);
       setNoLeidas(noLeidasList.length);
     } catch (error) {
-      console.error('Error cargando notificaciones:', error);
+      logError(error, 'Header.cargarNotificaciones');
     }
   }, [user?.id]);
 
@@ -84,7 +84,7 @@ function Header({ onToggleSidebar }) {
       await marcarNotificacionLeida(id);
       cargarNotificaciones();
     } catch (error) {
-      console.error('Error marcando notificación como leída:', error);
+      logError(error, 'Header.marcarLeida');
     }
   };
 
@@ -93,7 +93,31 @@ function Header({ onToggleSidebar }) {
       await marcarTodasNotificacionesLeidas(user.id);
       cargarNotificaciones();
     } catch (error) {
-      console.error('Error marcando todas como leídas:', error);
+      logError(error, 'Header.marcarTodasLeidas');
+    }
+  };
+
+  const handleLimpiarAntiguas = async () => {
+    const result = await Swal.fire({
+      title: '¿Eliminar notificaciones antiguas?',
+      text: 'Se eliminarán las notificaciones con más de 24 horas de antigüedad.',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const eliminadas = await eliminarNotificacionesAntiguas(user.id);
+      if (eliminadas > 0) {
+        cargarNotificaciones();
+      }
+    } catch (error) {
+      logError(error, 'Header.limpiarAntiguas');
     }
   };
 
@@ -104,7 +128,7 @@ function Header({ onToggleSidebar }) {
           const perfilUsuario = await obtenerPerfilUsuario(user.id);
           setPerfil(perfilUsuario);
         } catch (error) {
-          console.error('Error cargando perfil en Header:', error);
+          logError(error, 'Header.cargarPerfil');
           setPerfil(null);
         }
       }
@@ -215,11 +239,16 @@ function Header({ onToggleSidebar }) {
             <div className="Dropdown_Notificaciones">
               <div className="Dropdown_Header">
                 <span className="Dropdown_Titulo">Notificaciones</span>
-                {noLeidas > 0 && (
-                  <button className="Dropdown_MarcarLeidas" onClick={handleMarcarTodasLeidas}>
-                    Marcar todas leídas
+                <div className="Dropdown_Acciones">
+                  <button className="Dropdown_BtnAccion" onClick={handleLimpiarAntiguas} title="Eliminar notificaciones con más de 24 horas">
+                    🗑️
                   </button>
-                )}
+                  {noLeidas > 0 && (
+                    <button className="Dropdown_MarcarLeidas" onClick={handleMarcarTodasLeidas}>
+                      Marcar todas leídas
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="Dropdown_Lista">
                 {notificaciones.length === 0 ? (

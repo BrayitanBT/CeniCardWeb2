@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from './Layout';
 import '../Style/Principal.css';
 import PrincipalBienvenida from '../Img/Principal.png'
@@ -155,9 +155,9 @@ function Principal() {
             <span>Reporte de nuevos usuarios y préstamos realizados</span>
           </div>
 
-          <div className="Area_Grafico" style={{ width: '100%', height: 350 }}>
+          <div className="Area_Grafico">
             {loading ? (
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+              <div className="Area_Grafico_Loading">
                 <p>Cargando datos...</p>
               </div>
             ) : (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Layout from './Layout';
 import { getHistorial } from '../services/historialService';
 import { devolverEquipo } from '../services/prestamoService';
@@ -11,14 +11,20 @@ import ReactDOM from 'react-dom/client';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
 import '../Style/Historial.css';
 
+const ITEMS_PER_PAGE = 8;
+
 function Historial() {
   const { user } = useAuth();
   const [historial, setHistorial] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [page, setPage] = useState(1);
   const [generandoPDF, setGenerandoPDF] = useState(false);
-  const graficoRef = useRef(null);
+  const [filtroMes, setFiltroMes] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
 
   useEffect(() => {
     cargarHistorial();
@@ -30,7 +36,7 @@ function Historial() {
       const data = await getHistorial();
       setHistorial(data);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Historial.cargarHistorial'), 'error');
     } finally {
       setLoading(false);
     }
@@ -46,6 +52,14 @@ function Historial() {
     
     return searchMatch && estadoMatch;
   });
+
+  const totalPages = Math.max(1, Math.ceil(historialFiltrado.length / ITEMS_PER_PAGE));
+  const historialPaginado = historialFiltrado.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => { setPage(1) }, [searchTerm, filtroEstado]);
 
   const handleLiberar = async (prestamo) => {
     if (prestamo.estado !== 'aceptado') {
@@ -70,7 +84,7 @@ function Historial() {
         await cargarHistorial();
         Swal.fire('Liberado', 'El equipo ha sido liberado correctamente', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Historial.liberar'), 'error');
       }
     }
   };
@@ -78,9 +92,9 @@ function Historial() {
   const getEstadoBadgeClass = (estado) => {
     switch (estado) {
       case 'aceptado':
-        return 'Tag_H activo';
+        return 'Tag_H aceptado';
       case 'devuelto':
-        return 'Tag_H entregado';
+        return 'Tag_H devuelto';
       case 'rechazado':
         return 'Tag_H rechazado';
       default:
@@ -101,6 +115,28 @@ function Historial() {
     }
   };
 
+  const meses = [
+    { value: '01', label: 'Enero' }, { value: '02', label: 'Febrero' },
+    { value: '03', label: 'Marzo' }, { value: '04', label: 'Abril' },
+    { value: '05', label: 'Mayo' }, { value: '06', label: 'Junio' },
+    { value: '07', label: 'Julio' }, { value: '08', label: 'Agosto' },
+    { value: '09', label: 'Septiembre' }, { value: '10', label: 'Octubre' },
+    { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' },
+  ];
+
+  const generarOpcionesMes = () => {
+    const opciones = [];
+    const now = new Date();
+    for (let i = 0; i < 12; i++) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const mes = meses.find(mm => mm.value === m);
+      opciones.push({ value: `${y}-${m}`, label: `${mes.label} ${y}` });
+    }
+    return opciones;
+  };
+
   const formatearFecha = (fecha) => {
     if (!fecha) return 'N/A';
     return new Date(fecha).toLocaleDateString('es-CO', {
@@ -118,14 +154,11 @@ function Historial() {
     });
   };
 
-  const obtenerHistorialUltimoMes = () => {
-    const hoy = new Date();
-    const haceUnMes = new Date();
-    haceUnMes.setMonth(haceUnMes.getMonth() - 1);
-    
+  const obtenerHistorialPorMes = (ym) => {
+    const [year, month] = ym.split('-').map(Number);
     return historial.filter(item => {
-      const fechaSolicitud = new Date(item.fecha_solicitud);
-      return fechaSolicitud >= haceUnMes;
+      const f = new Date(item.fecha_solicitud);
+      return f.getFullYear() === year && f.getMonth() + 1 === month;
     });
   };
 
@@ -138,8 +171,8 @@ function Historial() {
     });
     
     return [
-      { name: 'En préstamo', value: porEstado.aceptado, color: '#007832' },
-      { name: 'Devueltos', value: porEstado.devuelto, color: '#6b7280' },
+      { name: 'Pendiente', value: porEstado.aceptado, color: '#f59e0b' },
+      { name: 'Devueltos', value: porEstado.devuelto, color: '#007832' },
       { name: 'Rechazados', value: porEstado.rechazado, color: '#dc2626' }
     ];
   };
@@ -162,18 +195,22 @@ function Historial() {
   const descargarPDF = async () => {
     setGenerandoPDF(true);
     try {
-      const datosMes = obtenerHistorialUltimoMes();
+      const datosMes = obtenerHistorialPorMes(filtroMes);
       const datosGrafico = generarDatosGrafico(datosMes);
       const datosSemanal = generarDatosSemanal(datosMes);
-      
+
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 20;
       const contentWidth = pageWidth - margin * 2;
       let yPos = 0;
-      
-      // Helper: draw section title
+
+      const green = '#007832';
+      const yellow = '#f59e0b';
+      const red = '#dc2626';
+      const bgLight = '#f5f7f5';
+
       const drawSectionTitle = (title, y) => {
         doc.setFillColor(0, 120, 50);
         doc.rect(margin, y, contentWidth, 8, 'F');
@@ -183,344 +220,410 @@ function Historial() {
         doc.text(title, margin + 4, y + 5.5);
         return y + 14;
       };
-      
-      // Helper: draw separator line
-      const drawSeparator = (y) => {
-        doc.setDrawColor(220, 220, 220);
-        doc.setLineWidth(0.5);
-        doc.line(margin, y, pageWidth - margin, y);
-        return y + 8;
+
+      const drawStatCard = (x, y, w, h, label, value, accentColor, bg = bgLight) => {
+        doc.setFillColor(245, 247, 245);
+        doc.roundedRect(x, y, w, h, 3, 3, 'F');
+        doc.setFillColor(accentColor);
+        doc.roundedRect(x, y, 4, h, 2, 2, 'F');
+        doc.setTextColor(100, 100, 100);
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'normal');
+        doc.text(label, x + 8, y + 8);
+        doc.setTextColor(accentColor);
+        doc.setFontSize(18);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(value), x + 8, y + 22);
       };
-      
+
       // === HEADER ===
       doc.setFillColor(0, 120, 50);
-      doc.rect(0, 0, pageWidth, 50, 'F');
-      
-      // Accent line
+      doc.rect(0, 0, pageWidth, 48, 'F');
       doc.setFillColor(51, 167, 90);
-      doc.rect(0, 50, pageWidth, 3, 'F');
-      
+      doc.rect(0, 48, pageWidth, 2, 'F');
+
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(28);
+      doc.setFontSize(26);
       doc.setFont('helvetica', 'bold');
-      doc.text('CeniCard', margin, 22);
-      
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.text('Sistema de Carné Digital - SENA', margin, 30);
-      
-      // Right side info
+      doc.text('CeniCard', margin, 20);
       doc.setFontSize(9);
-      doc.text('Reporte de Historial', pageWidth - margin, 18, { align: 'right' });
+      doc.setFont('helvetica', 'normal');
+      doc.text('Sistema de Carné Digital — SENA', margin, 28);
+
       const fechaActual = new Date().toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' });
-      doc.text(`Fecha: ${fechaActual}`, pageWidth - margin, 26, { align: 'right' });
-      doc.text('Período: Último mes', pageWidth - margin, 34, { align: 'right' });
-      doc.text(`Total registros: ${datosMes.length}`, pageWidth - margin, 42, { align: 'right' });
-      
-      yPos = 62;
-      
-      // === RESUMEN ===
+      doc.setFontSize(9);
+      const [ySel, mSel] = filtroMes.split('-');
+      const mesLabel = meses.find(m => m.value === mSel)?.label || mSel;
+      const periodoLabel = `${mesLabel} ${ySel}`;
+      doc.text('Reporte de Historial', pageWidth - margin, 16, { align: 'right' });
+      doc.text(`Fecha: ${fechaActual}`, pageWidth - margin, 24, { align: 'right' });
+      doc.text(`Período: ${periodoLabel}`, pageWidth - margin, 32, { align: 'right' });
+      doc.text(`Total registros: ${datosMes.length}`, pageWidth - margin, 40, { align: 'right' });
+
+      yPos = 60;
+
+      // === RESUMEN DEL PERÍODO ===
       yPos = drawSectionTitle('RESUMEN DEL PERÍODO', yPos);
-      
+
       const totalPrestamos = datosMes.length;
       const enPrestamo = datosMes.filter(d => d.estado === 'aceptado').length;
       const devueltos = datosMes.filter(d => d.estado === 'devuelto').length;
       const rechazados = datosMes.filter(d => d.estado === 'rechazado').length;
-      
-      // Summary cards
-      const cardWidth = contentWidth / 4 - 6;
-      const cardHeight = 28;
+
+      const cardW = contentWidth / 4 - 6;
+      const cardH = 28;
       const cardY = yPos;
-      
-      // Card 1: Total
-      doc.setFillColor(245, 247, 245);
-      doc.roundedRect(margin, cardY, cardWidth, cardHeight, 3, 3, 'F');
-      doc.setFillColor(0, 120, 50);
-      doc.roundedRect(margin, cardY, 4, cardHeight, 2, 2, 'F');
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('TOTAL', margin + 8, cardY + 8);
-      doc.setTextColor(0, 120, 50);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(String(totalPrestamos), margin + 8, cardY + 22);
-      
-      // Card 2: En préstamo
-      const card2X = margin + cardWidth + 8;
-      doc.setFillColor(232, 245, 233);
-      doc.roundedRect(card2X, cardY, cardWidth, cardHeight, 3, 3, 'F');
-      doc.setFillColor(0, 120, 50);
-      doc.roundedRect(card2X, cardY, 4, cardHeight, 2, 2, 'F');
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('EN PRÉSTAMO', card2X + 8, cardY + 8);
-      doc.setTextColor(0, 120, 50);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(String(enPrestamo), card2X + 8, cardY + 22);
-      
-      // Card 3: Devueltos
-      const card3X = card2X + cardWidth + 8;
-      doc.setFillColor(243, 244, 246);
-      doc.roundedRect(card3X, cardY, cardWidth, cardHeight, 3, 3, 'F');
-      doc.setFillColor(107, 114, 128);
-      doc.roundedRect(card3X, cardY, 4, cardHeight, 2, 2, 'F');
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('DEVUELTOS', card3X + 8, cardY + 8);
-      doc.setTextColor(107, 114, 128);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(String(devueltos), card3X + 8, cardY + 22);
-      
-      // Card 4: Rechazados
-      const card4X = card3X + cardWidth + 8;
-      doc.setFillColor(254, 226, 226);
-      doc.roundedRect(card4X, cardY, cardWidth, cardHeight, 3, 3, 'F');
-      doc.setFillColor(220, 38, 38);
-      doc.roundedRect(card4X, cardY, 4, cardHeight, 2, 2, 'F');
-      doc.setTextColor(100, 100, 100);
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.text('RECHAZADOS', card4X + 8, cardY + 8);
-      doc.setTextColor(220, 38, 38);
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(String(rechazados), card4X + 8, cardY + 22);
-      
-      yPos = cardY + cardHeight + 12;
-      
-      // === GRÁFICAS ===
+
+      drawStatCard(margin, cardY, cardW, cardH, 'TOTAL', totalPrestamos, green);
+      drawStatCard(margin + cardW + 8, cardY, cardW, cardH, 'EN PRÉSTAMO', enPrestamo, yellow);
+      drawStatCard(margin + (cardW + 8) * 2, cardY, cardW, cardH, 'DEVUELTOS', devueltos, green);
+      drawStatCard(margin + (cardW + 8) * 3, cardY, cardW, cardH, 'RECHAZADOS', rechazados, red);
+
+      yPos = cardY + cardH + 14;
+
+      // === RESUMEN POR CATEGORÍAS ===
+      const categorias = {};
+      datosMes.forEach(item => {
+        const cat = item.equipo_categoria || 'Sin categoría';
+        if (!categorias[cat]) categorias[cat] = { aceptado: 0, devuelto: 0, rechazado: 0, total: 0 };
+        if (categorias[cat].hasOwnProperty(item.estado)) categorias[cat][item.estado]++;
+        categorias[cat].total++;
+      });
+
+      const catKeys = Object.keys(categorias);
+      if (catKeys.length > 0) {
+        const maxCatPerRow = Math.min(catKeys.length, 2);
+        const catRows = Math.ceil(catKeys.length / maxCatPerRow);
+        const catCardW = contentWidth / maxCatPerRow - 6;
+        const catCardH = 22;
+        const catSectionH = 14 + catRows * (catCardH + 8);
+
+        if (yPos + catSectionH > pageHeight - 25) {
+          doc.addPage();
+          yPos = 20;
+        }
+        yPos = drawSectionTitle('RESUMEN POR CATEGORÍAS', yPos);
+
+        catKeys.forEach((cat, ci) => {
+          const stats = categorias[cat];
+          const col = ci % maxCatPerRow;
+          const row = Math.floor(ci / maxCatPerRow);
+          const catX = margin + col * (contentWidth / maxCatPerRow) + 2;
+          const catY2 = yPos + row * (catCardH + 8);
+
+          if (catY2 + catCardH > pageHeight - 25) {
+            doc.addPage();
+            yPos = 20;
+            const newY = yPos + 0 * (catCardH + 8);
+            const newX = margin + (ci % maxCatPerRow) * (contentWidth / maxCatPerRow) + 2;
+            drawCategoryCard(doc, newX, newY, catCardW, catCardH, cat, stats, yellow, green, red);
+          } else {
+            drawCategoryCard(doc, catX, catY2, catCardW, catCardH, cat, stats, yellow, green, red);
+          }
+        });
+
+        yPos += catRows * (catCardH + 8) + 4;
+      }
+
+      // === ANÁLISIS VISUAL ===
+      const chartW = 140;
+      const chartH = 75;
+      const chartTotalH = 14 + 2 + 10 + 8 + chartH + 18 + 10 + 8 + chartH;
+      if (yPos + chartTotalH > pageHeight - 15) {
+        doc.addPage();
+        yPos = 20;
+      }
       yPos = drawSectionTitle('ANÁLISIS VISUAL', yPos);
-      
+
+      const chartCenterX = (pageWidth - chartW) / 2;
+
       // Pie chart
-      const chartY = yPos;
+      const pieY = yPos + 2;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(60, 60, 60);
-      doc.text('Distribución por Estado', margin, chartY + 5);
-      
+      doc.text('Distribución por Estado', chartCenterX, pieY + 5);
+
       const tempDiv = document.createElement('div');
       tempDiv.style.position = 'absolute';
       tempDiv.style.left = '-9999px';
-      tempDiv.style.width = '350px';
-      tempDiv.style.height = '250px';
+      tempDiv.style.width = '500px';
+      tempDiv.style.height = '320px';
+      tempDiv.style.background = '#ffffff';
       document.body.appendChild(tempDiv);
-      
+
       const root = ReactDOM.createRoot(tempDiv);
       root.render(
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={datosGrafico} cx="50%" cy="50%" outerRadius={80} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+            <Pie data={datosGrafico} cx="50%" cy="50%" outerRadius={100} dataKey="value" label={({ name, value }) => `${name}: ${value}`} labelLine={true}>
               {datosGrafico.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.color} />
+                <Cell key={`cell-${index}`} fill={entry.color} stroke="#fff" strokeWidth={2} />
               ))}
             </Pie>
             <Tooltip />
+            <Legend verticalAlign="bottom" height={30} />
           </PieChart>
         </ResponsiveContainer>
       );
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const canvas = await html2canvas(tempDiv, { backgroundColor: '#ffffff' });
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      const canvas = await html2canvas(tempDiv, { backgroundColor: '#ffffff', scale: 2 });
       const imgData = canvas.toDataURL('image/png');
-      doc.addImage(imgData, 'PNG', margin, chartY + 8, 90, 65);
-      
+      doc.addImage(imgData, 'PNG', chartCenterX, pieY + 8, chartW, chartH);
+
       document.body.removeChild(tempDiv);
       root.unmount();
-      
+
       // Bar chart
-      const barChartX = margin + 100;
+      const barY = pieY + chartH + 18;
+      const barSectionH = 5 + 8 + chartH;
+      if (barY + barSectionH > pageHeight - 15) {
+        doc.addPage();
+        yPos = 20;
+        doc.setFillColor(0, 120, 50);
+        doc.rect(margin, yPos, contentWidth, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('ANÁLISIS VISUAL (CONT.)', margin + 4, yPos + 5.5);
+        yPos += 14;
+      }
+
+      const barActualY = barY > pageHeight - 15 ? yPos + 2 : barY;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(60, 60, 60);
-      doc.text('Actividad Semanal', barChartX, chartY + 5);
-      
+      doc.text('Actividad Semanal', chartCenterX, barActualY + 5);
+
       const tempDiv2 = document.createElement('div');
       tempDiv2.style.position = 'absolute';
       tempDiv2.style.left = '-9999px';
-      tempDiv2.style.width = '350px';
-      tempDiv2.style.height = '250px';
+      tempDiv2.style.width = '500px';
+      tempDiv2.style.height = '300px';
+      tempDiv2.style.background = '#ffffff';
       document.body.appendChild(tempDiv2);
-      
+
       const root2 = ReactDOM.createRoot(tempDiv2);
       root2.render(
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={datosSemanal}>
+          <BarChart data={datosSemanal} margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="semana" tick={{ fontSize: 9 }} />
-            <YAxis tick={{ fontSize: 9 }} />
+            <XAxis dataKey="semana" tick={{ fontSize: 11 }} />
+            <YAxis tick={{ fontSize: 11 }} />
             <Tooltip />
-            <Legend wrapperStyle={{ fontSize: '9px' }} />
-            <Bar dataKey="aceptados" fill="#007832" name="Aceptados" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="devueltos" fill="#6b7280" name="Devueltos" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="rechazados" fill="#dc2626" name="Rechazados" radius={[4, 4, 0, 0]} />
+            <Legend verticalAlign="bottom" height={30} wrapperStyle={{ fontSize: '11px' }} />
+            <Bar dataKey="aceptados" fill="#f59e0b" name="Pendiente" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="devueltos" fill="#007832" name="Devuelto" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="rechazados" fill="#dc2626" name="Rechazado" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       );
-      
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const canvas2 = await html2canvas(tempDiv2, { backgroundColor: '#ffffff' });
+
+      await new Promise(resolve => setTimeout(resolve, 600));
+
+      const canvas2 = await html2canvas(tempDiv2, { backgroundColor: '#ffffff', scale: 2 });
       const imgData2 = canvas2.toDataURL('image/png');
-      doc.addImage(imgData2, 'PNG', barChartX, chartY + 8, 90, 65);
-      
+      doc.addImage(imgData2, 'PNG', chartCenterX, barActualY + 8, chartW, chartH);
+
       document.body.removeChild(tempDiv2);
       root2.unmount();
-      
-      yPos = chartY + 80;
-      
+
       // === TABLA DETALLADA ===
       doc.addPage();
       yPos = 20;
-      
-      // Page header
+
       doc.setFillColor(0, 120, 50);
       doc.rect(0, 0, pageWidth, 15, 'F');
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(10);
       doc.setFont('helvetica', 'bold');
-      doc.text('CeniCard - Detalle de Préstamos', margin, 10);
+      doc.text('CeniCard — Detalle de Préstamos', margin, 10);
       doc.setFont('helvetica', 'normal');
       doc.text(fechaActual, pageWidth - margin, 10, { align: 'right' });
-      
+
       yPos = 25;
       yPos = drawSectionTitle('DETALLE DE PRÉSTAMOS', yPos);
-      
-      // Table headers
-      const headers = ['N°', 'Solicitante', 'Documento', 'Equipo', 'Estado', 'Fecha'];
-      const colWidths = [12, 42, 28, 42, 26, 30];
-      
-      // Header background
-      doc.setFillColor(0, 120, 50);
-      doc.rect(margin, yPos, contentWidth, 9, 'F');
-      
-      // Header text
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'bold');
-      
-      let xPos = margin + 2;
-      headers.forEach((header, i) => {
-        const align = i === 0 || i === 2 || i === 4 || i === 5 ? 'center' : 'left';
-        const textX = align === 'center' ? xPos + colWidths[i] / 2 : xPos;
-        doc.text(header, textX, yPos + 6, { align, maxWidth: colWidths[i] - 2 });
-        xPos += colWidths[i];
+
+      const headers = ['N°', 'Solicitante', 'Documento', 'Categoría', 'Equipo', 'Estado', 'Fecha'];
+      const colWidths = [10, 35, 22, 28, 30, 22, 23];
+
+      const drawTableHeaders = (y) => {
+        doc.setFillColor(0, 120, 50);
+        doc.rect(margin, y, contentWidth, 9, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        let x = margin + 2;
+        headers.forEach((header, i) => {
+          const align = i === 0 || i === 2 || i === 5 || i === 6 ? 'center' : 'left';
+          const tx = align === 'center' ? x + colWidths[i] / 2 : x;
+          doc.text(header, tx, y + 6, { align, maxWidth: colWidths[i] - 2 });
+          x += colWidths[i];
+        });
+        return y + 9;
+      };
+
+      yPos = drawTableHeaders(yPos);
+
+      // Group data by category
+      const grouped = {};
+      datosMes.forEach(item => {
+        const cat = item.equipo_categoria || 'Sin categoría';
+        if (!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(item);
       });
-      
-      yPos += 9;
-      
-      // Table rows
+
+      const catOrder = Object.keys(grouped);
+
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(7);
-      
-      datosMes.forEach((item, index) => {
-        if (yPos > pageHeight - 25) {
-          // New page
+      doc.setFontSize(6.5);
+
+      let rowIndex = 0;
+      catOrder.forEach((cat) => {
+        const items = grouped[cat];
+
+        // Category group header
+        if (yPos > pageHeight - 30) {
           doc.addPage();
           doc.setFillColor(0, 120, 50);
           doc.rect(0, 0, pageWidth, 15, 'F');
           doc.setTextColor(255, 255, 255);
           doc.setFontSize(10);
           doc.setFont('helvetica', 'bold');
-          doc.text('CeniCard - Detalle de Préstamos', margin, 10);
+          doc.text('CeniCard — Detalle de Préstamos', margin, 10);
           yPos = 20;
           yPos = drawSectionTitle('DETALLE DE PRÉSTAMOS (CONT.)', yPos);
-          
-          // Re-draw headers
-          doc.setFillColor(0, 120, 50);
-          doc.rect(margin, yPos, contentWidth, 9, 'F');
-          doc.setTextColor(255, 255, 255);
-          doc.setFontSize(7.5);
-          doc.setFont('helvetica', 'bold');
-          xPos = margin + 2;
-          headers.forEach((header, i) => {
-            const align = i === 0 || i === 2 || i === 4 || i === 5 ? 'center' : 'left';
-            const textX = align === 'center' ? xPos + colWidths[i] / 2 : xPos;
-            doc.text(header, textX, yPos + 6, { align, maxWidth: colWidths[i] - 2 });
+          yPos = drawTableHeaders(yPos);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(6.5);
+        }
+
+        // Category sub-header bar
+        doc.setFillColor(230, 245, 235);
+        doc.rect(margin, yPos, contentWidth, 6, 'F');
+        doc.setTextColor(0, 120, 50);
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(7);
+        doc.text(`${cat} (${items.length} registro${items.length !== 1 ? 's' : ''})`, margin + 4, yPos + 4.5);
+        yPos += 6;
+
+        items.forEach((item) => {
+          if (yPos > pageHeight - 25) {
+            doc.addPage();
+            doc.setFillColor(0, 120, 50);
+            doc.rect(0, 0, pageWidth, 15, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.text('CeniCard — Detalle de Préstamos', margin, 10);
+            yPos = 20;
+            yPos = drawSectionTitle('DETALLE DE PRÉSTAMOS (CONT.)', yPos);
+            yPos = drawTableHeaders(yPos);
+            doc.setFont('helvetica', 'normal');
+            doc.setFontSize(6.5);
+          }
+
+          if (rowIndex % 2 === 0) {
+            doc.setFillColor(248, 250, 248);
+            doc.rect(margin, yPos, contentWidth, 6, 'F');
+          }
+
+          doc.setDrawColor(230, 230, 230);
+          doc.setLineWidth(0.2);
+          doc.line(margin, yPos + 6, pageWidth - margin, yPos + 6);
+
+          const fila = [
+            String(item.id),
+            item.usuario_nombre || 'N/A',
+            item.usuario_documento || 'N/A',
+            item.equipo_categoria || 'N/A',
+            item.equipo_nombre || 'N/A',
+            getEstadoTexto(item.estado),
+            formatearFecha(item.fecha_solicitud)
+          ];
+
+          let xPos = margin + 2;
+          fila.forEach((cell, i) => {
+            const align = i === 0 || i === 2 || i === 5 || i === 6 ? 'center' : 'left';
+            const tx = align === 'center' ? xPos + colWidths[i] / 2 : xPos;
+
+            if (i === 5) {
+              if (item.estado === 'aceptado') doc.setTextColor(245, 158, 11);
+              else if (item.estado === 'devuelto') doc.setTextColor(0, 120, 50);
+              else doc.setTextColor(220, 38, 38);
+            } else {
+              doc.setTextColor(40, 40, 40);
+            }
+
+            doc.text(String(cell).substring(0, 20), tx, yPos + 4.5, { align, maxWidth: colWidths[i] - 2 });
             xPos += colWidths[i];
           });
-          yPos += 9;
-          doc.setFont('helvetica', 'normal');
-          doc.setFontSize(7);
-        }
-        
-        // Alternating row colors
-        if (index % 2 === 0) {
-          doc.setFillColor(248, 250, 248);
-          doc.rect(margin, yPos, contentWidth, 7, 'F');
-        }
-        
-        // Row border
-        doc.setDrawColor(230, 230, 230);
-        doc.setLineWidth(0.2);
-        doc.line(margin, yPos + 7, pageWidth - margin, yPos + 7);
-        
-        const fila = [
-          String(item.id),
-          item.usuario_nombre || 'N/A',
-          item.usuario_documento || 'N/A',
-          item.equipo_nombre || 'N/A',
-          getEstadoTexto(item.estado),
-          formatearFecha(item.fecha_solicitud)
-        ];
-        
-        // Row text
-        xPos = margin + 2;
-        fila.forEach((cell, i) => {
-          const align = i === 0 || i === 2 || i === 4 || i === 5 ? 'center' : 'left';
-          const textX = align === 'center' ? xPos + colWidths[i] / 2 : xPos;
-          
-          // Color for status
-          if (i === 4) {
-            if (item.estado === 'aceptado') doc.setTextColor(0, 120, 50);
-            else if (item.estado === 'devuelto') doc.setTextColor(107, 114, 128);
-            else doc.setTextColor(220, 38, 38);
-          } else {
-            doc.setTextColor(40, 40, 40);
-          }
-          
-          doc.text(String(cell).substring(0, 22), textX, yPos + 5, { align, maxWidth: colWidths[i] - 2 });
-          xPos += colWidths[i];
+
+          yPos += 6;
+          rowIndex++;
         });
-        
-        yPos += 7;
       });
-      
-      // === FOOTER on all pages ===
+
+      // === FOOTER ===
       const pageCount = doc.internal.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        
-        // Footer line
         doc.setDrawColor(220, 220, 220);
         doc.setLineWidth(0.3);
         doc.line(margin, pageHeight - 15, pageWidth - margin, pageHeight - 15);
-        
-        // Footer text
         doc.setTextColor(140, 140, 140);
         doc.setFontSize(8);
         doc.setFont('helvetica', 'normal');
-        doc.text('CeniCard - Sistema de Carné Digital SENA', margin, pageHeight - 8);
+        doc.text('CeniCard — Sistema de Carné Digital SENA', margin, pageHeight - 8);
         doc.text(`Página ${i} de ${pageCount}`, pageWidth - margin, pageHeight - 8, { align: 'right' });
-        
-        // Green accent at bottom
         doc.setFillColor(0, 120, 50);
         doc.rect(0, pageHeight - 3, pageWidth, 3, 'F');
       }
-      
+
       doc.save(`historial-cenicard-${new Date().toISOString().split('T')[0]}.pdf`);
       Swal.fire('Éxito', 'Reporte PDF descargado correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Historial.descargarPDF'), 'error');
     } finally {
       setGenerandoPDF(false);
     }
   };
+
+  function drawCategoryCard(doc, x, y, w, h, name, stats, yellow, green, red) {
+    const colors = { aceptado: yellow, devuelto: green, rechazado: red };
+    const full = { aceptado: 'Pendiente', devuelto: 'Devuelto', rechazado: 'Rechazado' };
+
+    doc.setFillColor(245, 247, 245);
+    doc.roundedRect(x, y, w, h, 3, 3, 'F');
+    doc.setFillColor(0, 120, 50);
+    doc.roundedRect(x, y, 3, h, 1.5, 1.5, 'F');
+
+    const pad = 5;
+    const leftX = x + pad + 3;
+
+    doc.setTextColor(40, 40, 40);
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'bold');
+    const maxName = name.length > 16 ? name.substring(0, 16) + '…' : name;
+    doc.text(maxName, leftX, y + 5);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.5);
+    let sy = y + 11;
+    ['aceptado', 'devuelto', 'rechazado'].forEach(key => {
+      const val = stats[key] || 0;
+      doc.setTextColor(colors[key]);
+      doc.text(`${full[key]}: ${val}`, leftX, sy);
+      sy += 4.2;
+    });
+
+    doc.setTextColor(140, 140, 140);
+    doc.setFontSize(5.5);
+    doc.setFont('helvetica', 'italic');
+    doc.text(`Total: ${stats.total}`, leftX + 50, y + h - 3.5);
+  }
 
   return (
     <Layout>
@@ -557,6 +660,15 @@ function Historial() {
             </div>
             <select 
               className="Select_Filtro_Historial"
+              value={filtroMes}
+              onChange={(e) => setFiltroMes(e.target.value)}
+            >
+              {generarOpcionesMes().map(op => (
+                <option key={op.value} value={op.value}>{op.label}</option>
+              ))}
+            </select>
+            <select 
+              className="Select_Filtro_Historial"
               value={filtroEstado}
               onChange={(e) => setFiltroEstado(e.target.value)}
             >
@@ -586,18 +698,18 @@ function Historial() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
+                    <td colSpan="10" className="Celda_Vacia_H">
                       Cargando historial...
                     </td>
                   </tr>
                 ) : historialFiltrado.length === 0 ? (
                   <tr>
-                    <td colSpan="10" style={{ textAlign: 'center', padding: '40px' }}>
+                    <td colSpan="10" className="Celda_Vacia_H">
                       No se encontraron registros
                     </td>
                   </tr>
                 ) : (
-                  historialFiltrado.map((item) => (
+                  historialPaginado.map((item) => (
                     <tr key={item.id}>
                       <td>{item.id}</td>
                       <td>{item.usuario_nombre}</td>
@@ -612,7 +724,7 @@ function Historial() {
                       <td>
                         <div>
                           <div>{formatearFecha(item.fecha_solicitud)}</div>
-                          <small style={{ color: '#666' }}>
+                          <small className="Texto_Hora_H">
                             {formatearHora(item.fecha_solicitud)}
                           </small>
                         </div>
@@ -620,7 +732,7 @@ function Historial() {
                       <td>
                         <div>
                           <div>{formatearFecha(item.fecha_aceptacion)}</div>
-                          <small style={{ color: '#666' }}>
+                          <small className="Texto_Hora_H">
                             {formatearHora(item.fecha_aceptacion)}
                           </small>
                         </div>
@@ -628,7 +740,7 @@ function Historial() {
                       <td>
                         <div>
                           <div>{formatearFecha(item.fecha_devolucion)}</div>
-                          <small style={{ color: '#666' }}>
+                          <small className="Texto_Hora_H">
                             {formatearHora(item.fecha_devolucion)}
                           </small>
                         </div>
@@ -636,19 +748,15 @@ function Historial() {
                       <td>
                         {item.estado === 'aceptado' ? (
                           <button 
-                            className="Btn_Lib_H activo"
+                            className="Btn_Liberar_H"
                             onClick={() => handleLiberar(item)}
                           >
-                            Liberar
+                            ↩ Liberar
                           </button>
                         ) : item.estado === 'devuelto' ? (
-                          <span style={{ color: '#28a745', fontWeight: 'bold' }}>
-                            Liberado
-                          </span>
+                          <span className="Tag_H devuelto">Liberado</span>
                         ) : (
-                          <span style={{ color: '#dc3545', fontWeight: 'bold' }}>
-                            Rechazado
-                          </span>
+                          <span className="Tag_H rechazado">Rechazado</span>
                         )}
                       </td>
                     </tr>
@@ -657,6 +765,16 @@ function Historial() {
               </tbody>
             </table>
           </div>
+
+          {totalPages > 1 && (
+            <div className="Paginacion">
+              <button className="Btn_Pagina" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button key={p} className={`Btn_Pagina ${p === page ? 'activo' : ''}`} onClick={() => setPage(p)}>{p}</button>
+              ))}
+              <button className="Btn_Pagina" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+            </div>
+          )}
 
           {historialFiltrado.length > 0 && (
             <div className="Footer_Tabla_H">

@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 
 export async function getNotificaciones(usuarioId) {
   const { data, error } = await supabase
@@ -8,7 +9,7 @@ export async function getNotificaciones(usuarioId) {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo notificaciones:', error)
+    logError(error, 'notificacionService.getNotificaciones')
     return []
   }
   return data
@@ -23,7 +24,7 @@ export async function getNotificacionesNoLeidas(usuarioId) {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo notificaciones no leídas:', error)
+    logError(error, 'notificacionService.getNotificacionesNoLeidas')
     return []
   }
   return data
@@ -42,7 +43,7 @@ export async function createNotificacion(notificacion) {
     .select()
 
   if (error) {
-    console.error('Error creando notificación:', error)
+    logError(error, 'notificacionService.createNotificacion')
     throw error
   }
   return data[0]
@@ -56,7 +57,7 @@ export async function marcarNotificacionLeida(id) {
     .select()
 
   if (error) {
-    console.error('Error marcando notificación como leída:', error)
+    logError(error, 'notificacionService.marcarNotificacionLeida')
     throw error
   }
   return data[0]
@@ -70,7 +71,7 @@ export async function marcarTodasNotificacionesLeidas(usuarioId) {
     .eq('leida', false)
 
   if (error) {
-    console.error('Error marcando todas las notificaciones como leídas:', error)
+    logError(error, 'notificacionService.marcarTodasNotificacionesLeidas')
     throw error
   }
 }
@@ -82,7 +83,25 @@ export async function deleteNotificacion(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando notificación:', error)
+    logError(error, 'notificacionService.deleteNotificacion')
     throw error
   }
+}
+
+export async function eliminarNotificacionesAntiguas(usuarioId) {
+  const hace24h = new Date();
+  hace24h.setHours(hace24h.getHours() - 24);
+
+  const { data, error } = await supabase
+    .from('notificaciones')
+    .delete()
+    .eq('usuario_id', usuarioId)
+    .lt('created_at', hace24h.toISOString())
+    .select('id')
+
+  if (error) {
+    logError(error, 'notificacionService.eliminarNotificacionesAntiguas')
+    throw error
+  }
+  return data?.length || 0
 }

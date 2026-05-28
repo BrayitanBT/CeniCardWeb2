@@ -550,3 +550,47 @@
     font-size: 0.82rem;
   }
 }
+
+.Paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 24px;
+  padding-bottom: var(--space-6);
+}
+
+.Btn_Pagina {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.Btn_Pagina:hover:not(:disabled) {
+  color: #2E7D32;
+  background: #f0faf0;
+}
+
+.Btn_Pagina.activo {
+  background: linear-gradient(135deg, #2E7D32, #388E3C);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.25);
+  transform: scale(1.05);
+}
+
+.Btn_Pagina:disabled {
+  opacity: 0.25;
+  cursor: default;
+}

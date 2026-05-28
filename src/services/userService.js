@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 import { formatearNombreCompleto } from './utils'
 
 export async function getUsuarios() {
@@ -11,7 +12,7 @@ export async function getUsuarios() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo usuarios:', error)
+    logError(error, 'userService.getUsuarios')
     return []
   }
   
@@ -37,7 +38,7 @@ export async function getUsuarioById(id) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo usuario:', error)
+    logError(error, 'userService.getUsuarioById')
     return null
   }
   
@@ -159,7 +160,7 @@ export async function createUsuario(usuarioData) {
 
     return { id: authUserId }
   } catch (error) {
-    console.error('Error creando usuario:', error)
+    logError(error, 'userService.createUsuario')
     throw error
   }
 }
@@ -191,7 +192,7 @@ export async function updateUsuario(id, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando usuario:', error)
+    logError(error, 'userService.updateUsuario')
     throw error
   }
   return data[0]
@@ -204,7 +205,7 @@ export async function deleteUsuario(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando usuario:', error)
+    logError(error, 'userService.deleteUsuario')
     throw error
   }
 }
@@ -216,7 +217,7 @@ export async function getRolesDisponibles() {
     .not('rol', 'is', null)
 
   if (error) {
-    console.error('Error obteniendo roles:', error)
+    logError(error, 'userService.getRolesDisponibles')
     return []
   }
 
@@ -234,7 +235,7 @@ export async function getAllUsuariosConFichas() {
     .order('primer_apellido', { ascending: true })
 
   if (error) {
-    console.error('Error obteniendo usuarios:', error)
+    logError(error, 'userService.getAllUsuariosConFichas')
     return []
   }
   

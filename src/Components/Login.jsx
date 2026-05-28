@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { NavLink } from "react-router-dom";
 import { useAuth } from "../Context/AuthContext";
 import { loginConDocumento } from "../services/authService";
+import { logError } from "../services/errorService";
 import { supabase } from "../supabaseClient";
 import "../Style/Login.css";
 import PersonaCenicard from "../Img/PersonaCenicard.png";
@@ -112,7 +112,7 @@ function Login() {
       }
       
     } catch (err) {
-      console.error("Error en login:", err);
+      logError(err, 'Login.handleLogin');
       setError("Ocurrió un error inesperado. Por favor, intenta de nuevo.");
     } finally {
       setLoading(false);
@@ -122,14 +122,7 @@ function Login() {
   return (
     <div className="Contenedor_Login">
       {authLoading ? (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          height: '100vh',
-          color: 'white',
-          fontSize: '18px'
-        }}>
+        <div className="Login_Loading">
           Cargando...
         </div>
       ) : (
@@ -149,16 +142,7 @@ function Login() {
           <p className="Subtitulo_Login">Ingresa tus credenciales para continuar</p>
 
           {error && (
-            <div className="error-message" style={{
-              color: '#dc3545',
-              backgroundColor: '#fef2f2',
-              border: '1px solid #fecaca',
-              borderRadius: '8px',
-              padding: '12px',
-              margin: '0 0 var(--space-4) 0',
-              fontSize: '14px',
-              textAlign: 'center'
-            }}>
+            <div className="Login_Error">
               {error}
             </div>
           )}
@@ -180,7 +164,7 @@ function Login() {
 
             <div className="Formu_Info">
               <label htmlFor="Password">Contraseña</label>
-              <div style={{ position: 'relative' }}>
+              <div className="Password_Wrapper">
                 <input
                   id="Password"
                   type={mostrarContrasena ? "text" : "password"}
@@ -190,25 +174,12 @@ function Login() {
                   onChange={handleChange}
                   disabled={loading}
                   autoComplete="current-password"
-                  style={{ width: '100%', paddingRight: '44px' }}
+                  className="Password_Input"
                 />
                 <button
                   type="button"
+                  className="Password_Toggle"
                   onClick={() => setMostrarContrasena(!mostrarContrasena)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    fontSize: '16px',
-                    opacity: 0.6,
-                    transition: 'opacity 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.opacity = '1'}
-                  onMouseLeave={(e) => e.target.style.opacity = '0.6'}
                 >
                   {mostrarContrasena ? '🙈' : '👁️'}
                 </button>
@@ -220,23 +191,10 @@ function Login() {
                 type="submit"
                 className="btn_Ingresar"
                 disabled={loading}
-                style={{
-                  opacity: loading ? 0.7 : 1,
-                  cursor: loading ? 'not-allowed' : 'pointer'
-                }}
               >
                 {loading ? (
                   <>
-                    <span className="spinner" style={{
-                      display: 'inline-block',
-                      width: '16px',
-                      height: '16px',
-                      border: '2px solid rgba(255,255,255,0.3)',
-                      borderTop: '2px solid #fff',
-                      borderRadius: '50%',
-                      animation: 'spin 0.6s linear infinite',
-                      marginRight: '8px'
-                    }}></span>
+                    <span className="Spinner_Login"></span>
                     INGRESANDO...
                   </>
                 ) : "INGRESAR"}
@@ -244,19 +202,10 @@ function Login() {
             </div>
           </form>
 
-          <NavLink to="/Registro" className="Enlace">
-            ¿No tienes una cuenta? <strong>Regístrate aquí</strong>
-          </NavLink>
           
         </div>
       </div>
       )}
-      <style jsx>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
     </div>
   );
 }

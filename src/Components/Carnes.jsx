@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getAllUsuariosConFichas } from '../services/userService';
 import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
@@ -6,6 +6,8 @@ import { FaUsers, FaPlus, FaPhoneAlt, FaHeart, FaUserFriends, FaCog } from 'reac
 import LogoSena from "../Img/logoSena.png";
 import Layout from './Layout';
 import '../Style/Carnes.css';
+
+const ITEMS_PER_PAGE = 8;
 
 const labelRol = {
   aprendiz: 'APRENDIZ',
@@ -25,6 +27,7 @@ function Carnes() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     cargarUsuarios();
@@ -51,6 +54,14 @@ function Carnes() {
     const rolMatch = usuario.rol?.toLowerCase().includes(term);
     return nombreMatch || docMatch || fichaMatch || rolMatch;
   });
+
+  const totalPages = Math.max(1, Math.ceil(usuariosFiltrados.length / ITEMS_PER_PAGE));
+  const usuariosPaginados = usuariosFiltrados.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => { setPage(1) }, [searchTerm]);
 
   const renderFrente = (perfil) => {
     const nombreCompleto = perfil.nombre || `${perfil.primer_nombre} ${perfil.primer_apellido}`;
@@ -107,10 +118,10 @@ function Carnes() {
             )}
           </div>
         </div>
-        <p className="Carnet_Rol_Label">{labelRol[perfil.rol] ?? perfil.rol?.toUpperCase()}</p>
+        <p className="Carnet_Rol_Label">{labelRol[perfil.rol] ?? perfil.rol?.toUpperCase() ?? '—'}</p>
         <div className="Carnet_Separador" />
         <h2 className="Carnet_Nombre">{nombreCompleto}</h2>
-        <p className="Carnet_Campo">CC {perfil.numero_cc}</p>
+        <p className="Carnet_Campo">CC {perfil.numero_cc ?? '—'}</p>
         <p className="Carnet_Campo">RH: {perfil.rh ?? '—'}</p>
         <div className="Carnet_Fecha_Row">
           <span className="Carnet_Campo">Fecha de<br />vencimiento</span>
@@ -173,7 +184,7 @@ function Carnes() {
         ) : usuariosFiltrados.length === 0 ? (
           <div className="Carnes_Empty">No se encontraron resultados</div>
         ) : (
-          usuariosFiltrados.map(usuario => (
+          usuariosPaginados.map(usuario => (
             <div
               key={usuario.id}
               className="Carnes_Card_Wrapper"
@@ -201,6 +212,16 @@ function Carnes() {
           ))
         )}
       </div>
+
+        {totalPages > 1 && (
+          <div className="Paginacion">
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button key={p} className={`Btn_Pagina ${p === page ? 'activo' : ''}`} onClick={() => setPage(p)}>{p}</button>
+            ))}
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+          </div>
+        )}
       </div>
     </Layout>
   );

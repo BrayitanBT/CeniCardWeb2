@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from './Layout';
 import { getUsuarios, updateUsuario, deleteUsuario, getRolesDisponibles, createUsuario } from '../services/userService';
 import { handleApiError } from '../services/errorService';
+import { subirFoto } from '../services/storageService';
 import Swal from 'sweetalert2';
 import '../Style/Usuarios.css';
 
+const ITEMS_PER_PAGE = 8;
 const OPCIONES_RH = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
 
 function Usuarios() {
@@ -13,9 +15,12 @@ function Usuarios() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroRol, setFiltroRol] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [page, setPage] = useState(1);
   const [modalEditar, setModalEditar] = useState(false);
   const [modalEstado, setModalEstado] = useState(false);
   const [modalCrear, setModalCrear] = useState(false);
+  const [fotoFileEditar, setFotoFileEditar] = useState(null);
+  const [fotoFileCrear, setFotoFileCrear] = useState(null);
   const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
   const [formUsuario, setFormUsuario] = useState({});
   const [formCrear, setFormCrear] = useState({
@@ -56,7 +61,7 @@ function Usuarios() {
       const data = await getUsuarios();
       setUsuarios(data);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Usuarios.cargarUsuarios'), 'error');
     } finally {
       setLoading(false);
     }
@@ -67,7 +72,7 @@ function Usuarios() {
       const roles = await getRolesDisponibles();
       setRolesDisponibles(roles);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Usuarios.cargarRoles'), 'error');
     }
   };
 
@@ -82,6 +87,14 @@ function Usuarios() {
     
     return searchMatch && rolMatch && estadoMatch;
   });
+
+  const totalPages = Math.max(1, Math.ceil(usuariosFiltrados.length / ITEMS_PER_PAGE));
+  const usuariosPaginados = usuariosFiltrados.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => { setPage(1) }, [searchTerm, filtroRol, filtroEstado]);
 
   const getRolTexto = (rol) => {
     const roles = {
@@ -142,12 +155,17 @@ function Usuarios() {
 
     setGuardando(true);
     try {
-      await updateUsuario(usuarioSeleccionado.id, formUsuario);
+      let fotoUrl = formUsuario.foto_url;
+      if (fotoFileEditar) {
+        fotoUrl = await subirFoto(fotoFileEditar, usuarioSeleccionado.id);
+      }
+      await updateUsuario(usuarioSeleccionado.id, { ...formUsuario, foto_url: fotoUrl });
       await cargarUsuarios();
       setModalEditar(false);
+      setFotoFileEditar(null);
       Swal.fire('Actualizado', 'Usuario actualizado correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Usuarios.guardarUsuario'), 'error');
     } finally {
       setGuardando(false);
     }
@@ -170,7 +188,7 @@ function Usuarios() {
       setModalEstado(false);
       Swal.fire('Actualizado', `Carné ${getEstadoCarneTexto(estadoSeleccionado).toLowerCase()}`, 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Usuarios.guardarEstado'), 'error');
     } finally {
       setGuardando(false);
     }
@@ -207,6 +225,11 @@ function Usuarios() {
       return;
     }
 
+    if (!fotoFileCrear) {
+      Swal.fire('Error', 'La foto de perfil es requerida', 'error');
+      return;
+    }
+
     if (formCrear.contrasena.length < 6) {
       Swal.fire('Error', 'La contraseña debe tener al menos 6 caracteres', 'error');
       return;
@@ -219,13 +242,19 @@ function Usuarios() {
 
     setGuardando(true);
     try {
-      await createUsuario(formCrear);
+      let fotoUrlCrear = formCrear.foto_url;
+      if (fotoFileCrear) {
+        const tempId = `temp_${Date.now()}`;
+        fotoUrlCrear = await subirFoto(fotoFileCrear, tempId);
+      }
+      await createUsuario({ ...formCrear, foto_url: fotoUrlCrear });
 
       await cargarUsuarios();
       setModalCrear(false);
+      setFotoFileCrear(null);
       Swal.fire('Creado', 'Usuario creado correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Usuarios.crearUsuario'), 'error');
     } finally {
       setGuardando(false);
     }
@@ -249,12 +278,12 @@ function Usuarios() {
         await cargarUsuarios();
         Swal.fire('Eliminado', 'Usuario eliminado correctamente', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Usuarios.eliminarUsuario'), 'error');
       }
     }
   };
 
-  const estadosUnicos = [...new Set(usuarios.map(u => u.estado_carne))];
+  const estadosUnicos = [...new Set(usuariosFiltrados.map(u => u.estado_carne))].filter(Boolean);
 
   return (
     <Layout>
@@ -312,26 +341,23 @@ function Usuarios() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="5" className="Celda_Vacia_U">
                     Cargando usuarios...
                   </td>
                 </tr>
               ) : usuariosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="5" className="Celda_Vacia_U">
                     No se encontraron usuarios
                   </td>
                 </tr>
               ) : (
-                usuariosFiltrados.map(usuario => (
+                usuariosPaginados.map(usuario => (
                   <tr key={usuario.id}>
                     <td>
                       <div className="Usuario_Info">
-                        <div className="Avatar_Mini" style={{
-                          backgroundImage: usuario.foto_url ? `url(${usuario.foto_url})` : 'none',
-                          backgroundColor: usuario.foto_url ? 'transparent' : '#007bff',
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
+                        <div className="Avatar_Mini Avatar_Mini_Img" style={{
+                          backgroundImage: usuario.foto_url ? `url(${usuario.foto_url})` : undefined,
                         }}>
                           {!usuario.foto_url && usuario.nombre?.charAt(0).toUpperCase()}
                         </div>
@@ -379,6 +405,17 @@ function Usuarios() {
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="Paginacion">
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button key={p} className={`Btn_Pagina ${p === page ? 'activo' : ''}`} onClick={() => setPage(p)}>{p}</button>
+            ))}
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+          </div>
+        )}
+
       </div>
 
       {/* Modal: editar usuario */}
@@ -518,6 +555,41 @@ function Usuarios() {
                     onChange={e => setFormUsuario(prev => ({ ...prev, fecha_vencimiento_carne: e.target.value }))}
                   />
                 </div>
+                <div className="Modal_Campo_Perfil">
+                  <label>Foto de perfil</label>
+                  {formUsuario.foto_url && !fotoFileEditar && (
+                    <img src={formUsuario.foto_url} alt="Vista previa" className="Foto_Preview" />
+                  )}
+                  {fotoFileEditar && (
+                    <img src={formUsuario.foto_url} alt="Vista previa" className="Foto_Preview" />
+                  )}
+                  <div className="Foto_Upload_Wrapper">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="foto-editar"
+                      className="Foto_Upload_Input"
+                      onChange={e => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setFotoFileEditar(file);
+                          const reader = new FileReader();
+                          reader.onload = (ev) => setFormUsuario(prev => ({ ...prev, foto_url: ev.target.result }));
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <label htmlFor="foto-editar" className="Foto_Upload_Label">
+                      <span className="Foto_Upload_Icono">📷</span>
+                      <span>{fotoFileEditar ? fotoFileEditar.name : (formUsuario.foto_url ? 'Cambiar foto' : 'Seleccionar archivo')}</span>
+                    </label>
+                  </div>
+                  {(fotoFileEditar || formUsuario.foto_url) && (
+                    <button type="button" className="Opcional_Quitar" onClick={() => { setFotoFileEditar(null); setFormUsuario(prev => ({ ...prev, foto_url: '' })); }}>
+                      Quitar foto
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -559,15 +631,6 @@ function Usuarios() {
                     className="Modal_Input_Perfil"
                     value={formUsuario.contacto_emergencia_telefono}
                     onChange={e => setFormUsuario(prev => ({ ...prev, contacto_emergencia_telefono: e.target.value }))}
-                  />
-                </div>
-                <div className="Modal_Campo_Perfil">
-                  <label>URL de foto</label>
-                  <input
-                    type="url"
-                    className="Modal_Input_Perfil"
-                    value={formUsuario.foto_url}
-                    onChange={e => setFormUsuario(prev => ({ ...prev, foto_url: e.target.value }))}
                   />
                 </div>
               </div>
@@ -629,7 +692,7 @@ function Usuarios() {
                 className={`Estado_Card ${estadoSeleccionado === 'activo' ? 'selected' : ''}`}
                 onClick={() => handleSeleccionarEstado('activo')}
               >
-                <div className="Estado_Card_Icono" style={{ background: 'linear-gradient(135deg, #007832, #33a75a)' }}>
+                <div className="Estado_Card_Icono activo">
                   ✓
                 </div>
                 <div className="Estado_Card_Info">
@@ -643,7 +706,7 @@ function Usuarios() {
                 className={`Estado_Card ${estadoSeleccionado === 'bloqueado' ? 'selected' : ''}`}
                 onClick={() => handleSeleccionarEstado('bloqueado')}
               >
-                <div className="Estado_Card_Icono" style={{ background: 'linear-gradient(135deg, #dc2626, #ef4444)' }}>
+                <div className="Estado_Card_Icono bloqueado">
                   ✕
                 </div>
                 <div className="Estado_Card_Info">
@@ -657,7 +720,7 @@ function Usuarios() {
                 className={`Estado_Card ${estadoSeleccionado === 'prestamo' ? 'selected' : ''}`}
                 onClick={() => handleSeleccionarEstado('prestamo')}
               >
-                <div className="Estado_Card_Icono" style={{ background: 'linear-gradient(135deg, #f59e0b, #fbbf24)' }}>
+                <div className="Estado_Card_Icono prestamo">
                   ⏳
                 </div>
                 <div className="Estado_Card_Info">
@@ -671,7 +734,7 @@ function Usuarios() {
                 className={`Estado_Card ${estadoSeleccionado === 'vencido' ? 'selected' : ''}`}
                 onClick={() => handleSeleccionarEstado('vencido')}
               >
-                <div className="Estado_Card_Icono" style={{ background: 'linear-gradient(135deg, #6b7280, #9ca3af)' }}>
+                <div className="Estado_Card_Icono vencido">
                   ⚠
                 </div>
                 <div className="Estado_Card_Info">
@@ -852,6 +915,38 @@ function Usuarios() {
                     onChange={e => setFormCrear(prev => ({ ...prev, fecha_vencimiento_carne: e.target.value }))}
                   />
                 </div>
+                <div className="Modal_Campo_Perfil">
+                  <label>Foto de perfil *</label>
+                  {fotoFileCrear && (
+                    <img src={formCrear.foto_url} alt="Vista previa" className="Foto_Preview" />
+                  )}
+                  <div className="Foto_Upload_Wrapper">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="foto-crear"
+                      className="Foto_Upload_Input"
+                      onChange={e => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setFotoFileCrear(file);
+                          const reader = new FileReader();
+                          reader.onload = (ev) => setFormCrear(prev => ({ ...prev, foto_url: ev.target.result }));
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                    <label htmlFor="foto-crear" className="Foto_Upload_Label">
+                      <span className="Foto_Upload_Icono">📷</span>
+                      <span>{fotoFileCrear ? fotoFileCrear.name : 'Seleccionar archivo'}</span>
+                    </label>
+                  </div>
+                  {fotoFileCrear && (
+                    <button type="button" className="Opcional_Quitar" onClick={() => { setFotoFileCrear(null); setFormCrear(prev => ({ ...prev, foto_url: '' })); }}>
+                      Quitar foto
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -906,16 +1001,6 @@ function Usuarios() {
                     className="Modal_Input_Perfil"
                     value={formCrear.contacto_emergencia_telefono}
                     onChange={e => setFormCrear(prev => ({ ...prev, contacto_emergencia_telefono: e.target.value }))}
-                  />
-                </div>
-                <div className="Modal_Campo_Perfil">
-                  <label>URL de foto</label>
-                  <input
-                    type="url"
-                    className="Modal_Input_Perfil"
-                    value={formCrear.foto_url}
-                    onChange={e => setFormCrear(prev => ({ ...prev, foto_url: e.target.value }))}
-                    placeholder="Opcional"
                   />
                 </div>
               </div>

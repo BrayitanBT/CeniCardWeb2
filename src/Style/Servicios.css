@@ -76,7 +76,6 @@ h2, h3, h4, strong {
   grid-template-columns: 1fr 1fr;
   gap: var(--space-8);
   margin-top: var(--space-5);
-  align-items: start;
 }
 
 .Columna_Noticias,
@@ -86,6 +85,14 @@ h2, h3, h4, strong {
   padding: var(--space-6);
   border: 1px solid var(--color-border-light);
   box-shadow: var(--shadow-sm);
+}
+
+.Paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: 20px;
 }
 
 .Fila_Titulo {
@@ -117,45 +124,61 @@ h2, h3, h4, strong {
 .Card_Noticia,
 .Card_Recurso {
   display: flex;
-  background: var(--color-primary-50);
-  border: 1px solid var(--color-primary-100);
+  align-items: stretch;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-light);
   border-radius: var(--radius-lg);
-  padding: var(--space-4);
+  padding: 16px 18px;
   margin-bottom: var(--space-4);
-  gap: var(--space-4);
+  gap: 14px;
+  min-height: 100px;
+  box-sizing: border-box;
   transition: all var(--transition-fast);
 }
 
 .Card_Noticia:hover,
 .Card_Recurso:hover {
   box-shadow: var(--shadow-md);
+  border-color: var(--color-primary-200);
   transform: translateY(-1px);
 }
 
 .Icono_Noticia_Container,
 .Icono_Recurso_Container {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border-light);
+  background: var(--color-primary-50);
+  border: 1px solid var(--color-primary-100);
+  width: 64px;
   min-width: 64px;
   height: 64px;
   border-radius: var(--radius-md);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  font-size: 1.4rem;
+  font-size: 1.8rem;
   flex-shrink: 0;
+  align-self: center;
+}
+
+.Info_Noticia,
+.Detalle_Recurso {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  gap: 4px;
 }
 
 .Tag_Verde {
-  background: var(--color-success-light);
-  color: var(--color-success);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-sm);
-  font-size: 0.65rem;
+  background: #e8f5e9;
+  color: #007832;
+  border: 1px solid #007832;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
   display: inline-block;
-  margin-bottom: var(--space-1);
-  font-weight: var(--font-weight-medium);
+  width: fit-content;
+  font-weight: 500;
 }
 
 .Filtros_Simulados {
@@ -164,6 +187,7 @@ h2, h3, h4, strong {
   margin-bottom: var(--space-5);
   flex-wrap: wrap;
 }
+
 
 .Select_Filtro {
   background: var(--color-bg);
@@ -182,26 +206,83 @@ h2, h3, h4, strong {
 }
 
 .Tag_Estado {
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
-  font-size: 0.7rem;
   display: inline-block;
-  font-weight: var(--font-weight-medium);
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+.Mensaje_Carga {
+  text-align: center;
+  padding: 20px;
+}
+
+.Mensaje_Vacio {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.Texto_Small_Noticia {
+  color: #666;
+}
+
+.Btn_Group {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
 }
 
 .Tag_Estado.green {
-  background: #d1f7e4;
-  color: #006b33;
+  background: #e8f5e9;
+  color: #007832;
+  border: 1px solid #007832;
 }
 
 .Tag_Estado.orange {
-  background: #fee9cf;
-  color: #bf6610;
+  background: #fef3c7;
+  color: #b45309;
+  border: 1px solid #f59e0b;
 }
 
 .Tag_Estado.red {
-  background: #fee1e1;
-  color: #9d1c1c;
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.Btn_Editar,
+.Btn_Eliminar {
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  border: 1px solid;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.Btn_Editar {
+  background: #e8f5e9;
+  color: #007832;
+  border-color: #007832;
+}
+
+.Btn_Editar:hover {
+  background: #007832;
+  color: white;
+}
+
+.Btn_Eliminar {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.Btn_Eliminar:hover {
+  background: #dc2626;
+  color: white;
 }
 
 .Programas_Recurso {
@@ -549,7 +630,7 @@ h2, h3, h4, strong {
 
   .Icono_Noticia_Container,
   .Icono_Recurso_Container {
-    min-width: 50px;
+    min-width: 60px;
     height: 50px;
     font-size: 1.2rem;
   }
@@ -562,3 +643,41 @@ h2, h3, h4, strong {
     border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 }
+
+
+.Btn_Pagina {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s;
+  position: relative;
+}
+
+.Btn_Pagina:hover:not(:disabled) {
+  color: #2E7D32;
+  background: #f0faf0;
+}
+
+.Btn_Pagina.activo {
+  background: linear-gradient(135deg, #2E7D32, #388E3C);
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(46, 125, 50, 0.25);
+  transform: scale(1.05);
+}
+
+.Btn_Pagina:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+

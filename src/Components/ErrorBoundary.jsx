@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { logError } from '../services/errorService'
+import '../Style/ErrorBoundary.css'
 
 class ErrorBoundary extends Component {
   constructor(props) {
@@ -12,8 +13,7 @@ class ErrorBoundary extends Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    logError(error, 'ErrorBoundary')
-    console.error('ErrorBoundary caught:', errorInfo.componentStack)
+    logError(error, `ErrorBoundary | ${errorInfo.componentStack}`)
   }
 
   handleRetry = () => {
@@ -24,36 +24,15 @@ class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          padding: '2rem',
-          background: '#f8f9fa',
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>️</div>
-          <h1 style={{ color: '#333', fontSize: '1.5rem', marginBottom: '0.5rem' }}>
+        <div className="ErrorBoundary_Container">
+          <div className="ErrorBoundary_Emoji">️</div>
+          <h1 className="ErrorBoundary_Title">
             Algo salió mal
           </h1>
-          <p style={{ color: '#666', fontSize: '0.9rem', marginBottom: '1.5rem', maxWidth: '400px' }}>
+          <p className="ErrorBoundary_Message">
             {this.state.error?.message || 'Ha ocurrido un error inesperado en la aplicación.'}
           </p>
-          <button
-            onClick={this.handleRetry}
-            style={{
-              background: '#007832',
-              color: 'white',
-              border: 'none',
-              padding: '0.75rem 2rem',
-              borderRadius: '9999px',
-              fontSize: '0.9rem',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            }}
-          >
+          <button className="ErrorBoundary_Btn" onClick={this.handleRetry}>
             Reintentar
           </button>
         </div>

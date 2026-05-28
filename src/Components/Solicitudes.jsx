@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from './Layout';
 import { getPrestamos, aprobarPrestamo, rechazarPrestamo } from '../services/prestamoService';
@@ -7,6 +7,8 @@ import { useAuth } from '../Context/AuthContext';
 import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
 import '../Style/Solicitudes.css';
+
+const ITEMS_PER_PAGE = 8;
 
 function Solicitudes() {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ function Solicitudes() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filtroCategoria, setFiltroCategoria] = useState('');
   const [filtroEstado, setFiltroEstado] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     cargarDatos();
@@ -37,7 +40,7 @@ function Solicitudes() {
       setSolicitudes(solicitudesPendientes);
       setCategorias(categoriasData);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Solicitudes.cargarDatos'), 'error');
     } finally {
       setLoading(false);
     }
@@ -57,6 +60,14 @@ function Solicitudes() {
     return searchMatch && categoriaMatch && estadoMatch;
   });
 
+  const totalPages = Math.max(1, Math.ceil(solicitudesFiltradas.length / ITEMS_PER_PAGE));
+  const solicitudesPaginadas = solicitudesFiltradas.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => { setPage(1) }, [searchTerm, filtroCategoria, filtroEstado]);
+
   const handleAprobarSolicitud = async (solicitud) => {
     const result = await Swal.fire({
       title: '¿Aprobar solicitud?',
@@ -75,7 +86,7 @@ function Solicitudes() {
         await cargarDatos();
         Swal.fire('Aprobado', 'La solicitud ha sido aprobada correctamente', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Solicitudes.aprobar'), 'error');
       }
     }
   };
@@ -104,7 +115,7 @@ function Solicitudes() {
         await cargarDatos();
         Swal.fire('Rechazado', 'La solicitud ha sido rechazada', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Solicitudes.rechazar'), 'error');
       }
     }
   };
@@ -206,18 +217,18 @@ function Solicitudes() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="8" className="Celda_Vacia_S">
                     Cargando solicitudes...
                   </td>
                 </tr>
               ) : solicitudesFiltradas.length === 0 ? (
                 <tr>
-                  <td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>
+                  <td colSpan="8" className="Celda_Vacia_S">
                     No se encontraron solicitudes
                   </td>
                 </tr>
               ) : (
-                solicitudesFiltradas.map((solicitud) => (
+                solicitudesPaginadas.map((solicitud) => (
                   <tr key={solicitud.id}>
                     <td>{solicitud.id}</td>
                     <td>{solicitud.usuario_nombre}</td>
@@ -249,9 +260,7 @@ function Solicitudes() {
                           </button>
                         </>
                       ) : (
-                        <span style={{ color: '#28a745', fontWeight: 'bold' }}>
-                          Aprobado
-                        </span>
+                        <span className="Estado_Punto aceptado">Aprobado</span>
                       )}
                     </td>
                   </tr>
@@ -261,29 +270,29 @@ function Solicitudes() {
           </table>
         </div>
 
+        {totalPages > 1 && (
+          <div className="Paginacion">
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button key={p} className={`Btn_Pagina ${p === page ? 'activo' : ''}`} onClick={() => setPage(p)}>{p}</button>
+            ))}
+            <button className="Btn_Pagina" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+          </div>
+        )}
+
         {solicitudesFiltradas.length > 0 && (
-          <div className="Resumen_Solicitudes" style={{ 
-            marginTop: '20px', 
-            padding: '15px', 
-            backgroundColor: '#f8f9fa', 
-            borderRadius: '8px',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '10px'
-          }}>
+          <div className="Resumen_Solicitudes">
             <span>
-              Mostrando {solicitudesFiltradas.length} de {solicitudes.length} solicitudes
+              Total: {solicitudesFiltradas.length} solicitudes
             </span>
-            <div style={{ display: 'flex', gap: '15px' }}>
+            <div className="Resumen_Stats">
               <span>
-                Pendientes: <strong style={{ color: '#ffc107' }}>
+                Pendientes: <strong className="Resumen_Count_Pendiente">
                   {solicitudesFiltradas.filter(s => s.estado === 'pendiente').length}
                 </strong>
               </span>
               <span>
-                Aprobadas: <strong style={{ color: '#28a745' }}>
+                Aprobadas: <strong className="Resumen_Count_Aprobado">
                   {solicitudesFiltradas.filter(s => s.estado === 'aceptado').length}
                 </strong>
               </span>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Layout from './Layout';
 import { 
   getCategoriasEquipos, 
@@ -8,12 +8,17 @@ import {
 } from '../services/equipoService';
 import { handleApiError } from '../services/errorService';
 import Swal from 'sweetalert2';
-import '../Style/Usuarios.css'; // Reutilizamos estilos similares
+import { renderIcon } from '../utils/iconRenderer.jsx';
+import '../Style/Usuarios.css';
+import '../Style/Categorias.css';
+
+const ITEMS_PER_PAGE = 8;
 
 function Categorias() {
   const [categorias, setCategorias] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
   const [modalAgregar, setModalAgregar] = useState(false);
   const [formCategoria, setFormCategoria] = useState({
     nombre: '',
@@ -31,18 +36,25 @@ function Categorias() {
       const data = await getCategoriasEquipos();
       setCategorias(data);
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Categorias.cargarCategorias'), 'error');
     } finally {
       setLoading(false);
     }
   };
 
-  // Filtrar categorías
   const categoriasFiltradas = categorias.filter(categoria => {
     return searchTerm === '' || 
       categoria.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       categoria.descripcion?.toLowerCase().includes(searchTerm.toLowerCase());
   });
+
+  const totalPages = Math.max(1, Math.ceil(categoriasFiltradas.length / ITEMS_PER_PAGE));
+  const categoriasPaginadas = categoriasFiltradas.slice(
+    (page - 1) * ITEMS_PER_PAGE,
+    page * ITEMS_PER_PAGE
+  );
+
+  useEffect(() => { setPage(1) }, [searchTerm]);
 
   const handleSubmitCategoria = async (e) => {
     e.preventDefault();
@@ -61,17 +73,19 @@ function Categorias() {
       
       Swal.fire('Éxito', 'Categoría creada correctamente', 'success');
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Categorias.submit'), 'error');
     }
   };
+
+  const esc = (str) => str?.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] || c) || '';
 
   const handleEditarCategoria = async (categoria) => {
     const result = await Swal.fire({
       title: 'Editar categoría',
       html: `
-        <input id="nombre" class="swal2-input" placeholder="Nombre" value="${categoria.nombre || ''}">
-        <input id="icono" class="swal2-input" placeholder="Icono (emoji)" value="${categoria.icono || ''}">
-        <textarea id="descripcion" class="swal2-textarea" placeholder="Descripción">${categoria.descripcion || ''}</textarea>
+        <input id="nombre" class="swal2-input" placeholder="Nombre" value="${esc(categoria.nombre)}">
+        <input id="icono" class="swal2-input" placeholder="Icono (emoji)" value="${esc(categoria.icono)}">
+        <textarea id="descripcion" class="swal2-textarea" placeholder="Descripción">${esc(categoria.descripcion)}</textarea>
       `,
       showCancelButton: true,
       confirmButtonText: 'Guardar',
@@ -96,7 +110,7 @@ function Categorias() {
         await cargarCategorias();
         Swal.fire('Actualizado', 'Categoría actualizada correctamente', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Categorias.editar'), 'error');
       }
     }
   };
@@ -119,7 +133,7 @@ function Categorias() {
         await cargarCategorias();
         Swal.fire('Eliminado', 'Categoría eliminada correctamente', 'success');
       } catch (error) {
-        Swal.fire('Error', handleApiError(error), 'error');
+        Swal.fire('Error', handleApiError(error, 'Categorias.eliminar'), 'error');
       }
     }
   };
@@ -134,7 +148,7 @@ function Categorias() {
         'success'
       );
     } catch (error) {
-      Swal.fire('Error', handleApiError(error), 'error');
+      Swal.fire('Error', handleApiError(error, 'Categorias.toggle'), 'error');
     }
   };
 
@@ -178,21 +192,21 @@ function Categorias() {
               <tbody>
                 {loading ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
+                    <td colSpan="6" className="Tabla_Vacia">
                       Cargando categorías...
                     </td>
                   </tr>
                 ) : categoriasFiltradas.length === 0 ? (
                   <tr>
-                    <td colSpan="6" style={{ textAlign: 'center', padding: '40px' }}>
+                    <td colSpan="6" className="Tabla_Vacia">
                       No se encontraron categorías
                     </td>
                   </tr>
                 ) : (
-                  categoriasFiltradas.map(categoria => (
+                  categoriasPaginadas.map(categoria => (
                     <tr key={categoria.id}>
-                      <td style={{ fontSize: '24px', textAlign: 'center' }}>
-                        {categoria.icono || '📦'}
+                      <td className="Icono_Tabla_Cat">
+                        {renderIcon(categoria.icono, 24) || '📦'}
                       </td>
                       <td><strong>{categoria.nombre}</strong></td>
                       <td>{categoria.descripcion || 'Sin descripción'}</td>
@@ -208,21 +222,18 @@ function Categorias() {
                         <button 
                           className="Btn_Accion"
                           onClick={() => handleEditarCategoria(categoria)}
-                          style={{ marginRight: '8px' }}
                         >
                           Editar
                         </button>
                         <button 
                           className={categoria.activa ? "Btn_Accion gray" : "Btn_Accion"}
                           onClick={() => handleToggleActiva(categoria)}
-                          style={{ marginRight: '8px' }}
                         >
                           {categoria.activa ? 'Desactivar' : 'Activar'}
                         </button>
                         <button 
                           className="Btn_Accion delete"
                           onClick={() => handleEliminarCategoria(categoria)}
-                          style={{ backgroundColor: '#dc3545' }}
                         >
                           Eliminar
                         </button>
@@ -232,29 +243,31 @@ function Categorias() {
                 )}
               </tbody>
             </table>
-          </div>
+            </div>
+
+          {totalPages > 1 && (
+            <div className="Paginacion">
+              <button className="Btn_Pagina" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>‹</button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+                <button key={p} className={`Btn_Pagina ${p === page ? 'activo' : ''}`} onClick={() => setPage(p)}>{p}</button>
+              ))}
+              <button className="Btn_Pagina" onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>›</button>
+            </div>
+          )}
 
           {categoriasFiltradas.length > 0 && (
-            <div style={{
-              marginTop: '20px',
-              padding: '15px',
-              backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
-            }}>
+            <div className="Summary_Cat">
               <span>
-                Mostrando {categoriasFiltradas.length} de {categorias.length} categorías
+                Mostrando {categoriasPaginadas.length} de {categoriasFiltradas.length} categorías
               </span>
-              <div style={{ display: 'flex', gap: '15px' }}>
+              <div className="Summary_Stats_Cat">
                 <span>
-                  Activas: <strong style={{ color: '#28a745' }}>
+                  Activas: <strong className="Summary_Count_Activa">
                     {categoriasFiltradas.filter(c => c.activa).length}
                   </strong>
                 </span>
                 <span>
-                  Inactivas: <strong style={{ color: '#dc3545' }}>
+                  Inactivas: <strong className="Summary_Count_Inactiva">
                     {categoriasFiltradas.filter(c => !c.activa).length}
                   </strong>
                 </span>
@@ -265,129 +278,63 @@ function Categorias() {
 
       {/* Modal para agregar categoría */}
       {modalAgregar && (
-        <div className="Overlay_Modal" style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '12px',
-            width: '500px',
-            maxWidth: '90vw'
-          }}>
-            <div style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
+        <div className="Modal_Overlay_Cat">
+          <div className="Modal_Content_Cat">
+            <div className="Modal_Header_Cat">
               <h2>Agregar nueva categoría</h2>
               <button 
+                className="Modal_Close_Cat"
                 onClick={() => setModalAgregar(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  fontSize: '24px',
-                  cursor: 'pointer'
-                }}
               >
                 ×
               </button>
             </div>
 
             <form onSubmit={handleSubmitCategoria}>
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  Nombre *
-                </label>
+              <div className="Modal_Field_Cat">
+                <label className="Modal_Label_Cat">Nombre *</label>
                 <input
                   type="text"
+                  className="Modal_Input_Cat"
                   value={formCategoria.nombre}
                   onChange={(e) => setFormCategoria({...formCategoria, nombre: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px'
-                  }}
                   placeholder="Ej: Portátiles"
                   required
                 />
               </div>
 
-              <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  Icono (emoji)
-                </label>
+              <div className="Modal_Field_Cat">
+                <label className="Modal_Label_Cat">Icono (emoji)</label>
                 <input
                   type="text"
+                  className="Modal_Input_Cat"
                   value={formCategoria.icono}
                   onChange={(e) => setFormCategoria({...formCategoria, icono: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px'
-                  }}
                   placeholder="💻"
                 />
               </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
-                  Descripción
-                </label>
+              <div className="Modal_Field_Last">
+                <label className="Modal_Label_Cat">Descripción</label>
                 <textarea
+                  className="Modal_Textarea_Cat"
                   value={formCategoria.descripcion}
                   onChange={(e) => setFormCategoria({...formCategoria, descripcion: e.target.value})}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '14px',
-                    minHeight: '80px',
-                    resize: 'vertical'
-                  }}
                   placeholder="Descripción de la categoría..."
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+              <div className="Modal_Actions_Cat">
                 <button
                   type="button"
+                  className="Modal_Btn_Secondary_Cat"
                   onClick={() => setModalAgregar(false)}
-                  style={{
-                    padding: '10px 20px',
-                    border: '1px solid #ddd',
-                    borderRadius: '6px',
-                    backgroundColor: '#f8f9fa',
-                    cursor: 'pointer'
-                  }}
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    padding: '10px 20px',
-                    border: 'none',
-                    borderRadius: '6px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    cursor: 'pointer'
-                  }}
+                  className="Modal_Btn_Primary_Cat"
                 >
                   Crear categoría
                 </button>

@@ -1,0 +1,127 @@
+.Modal_Overlay_Cat {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.Modal_Content_Cat {
+  background-color: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 500px;
+  max-width: 90vw;
+}
+
+.Modal_Header_Cat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.Modal_Close_Cat {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.Modal_Field_Cat {
+  margin-bottom: 15px;
+}
+
+.Modal_Label_Cat {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.Modal_Input_Cat {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.Modal_Field_Last {
+  margin-bottom: 20px;
+}
+
+.Modal_Textarea_Cat {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  min-height: 80px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.Modal_Actions_Cat {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.Modal_Btn_Secondary_Cat {
+  padding: 10px 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+}
+
+.Modal_Btn_Primary_Cat {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+}
+
+.Summary_Count_Activa {
+  color: #28a745;
+}
+
+.Summary_Count_Inactiva {
+  color: #dc3545;
+}
+
+.Summary_Cat {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Summary_Stats_Cat {
+  display: flex;
+  gap: 15px;
+}
+
+.Icono_Tabla_Cat {
+  font-size: 24px;
+  text-align: center;
+}
+
+.Btn_Accion_Cat {
+  margin-right: 8px;
+}
+
+.Btn_Eliminar_Cat {
+  background-color: #dc3545;
+}

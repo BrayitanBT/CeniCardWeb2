@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 
 export async function getEstadisticas() {
   try {
@@ -18,7 +19,7 @@ export async function getEstadisticas() {
       noticiasRecientes: noticiasRecientes.count || 0
     }
   } catch (error) {
-    console.error('Error obteniendo estadísticas:', error)
+    logError(error, 'estadisticaService.getEstadisticas')
     return {
       totalUsuarios: 0,
       prestamosActivos: 0,
@@ -50,7 +51,7 @@ export async function getEstadisticasPorCategoria() {
       totalEquipos: parseInt(cat.equipos[0]?.count || 0)
     }))
   } catch (error) {
-    console.error('Error obteniendo estadísticas por categoría:', error)
+    logError(error, 'estadisticaService.getEstadisticasPorCategoria')
     return []
   }
 }

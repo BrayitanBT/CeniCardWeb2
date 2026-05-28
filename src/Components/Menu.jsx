@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink } from 'react-router-dom';
 import "../Style/MenuLateral.css";
 import LogoSena from "../Img/logoSena.png";
@@ -16,7 +15,7 @@ function MenuLateral({ open = false, collapsed = false, onClose }) {
       <div className="Logo_Seccion">
         <img src={LogoSena} alt="Logo SENA" className="Logo_Sena_Icono" />
         <div className="Texto_Logo">
-            <span className="Ceni">CeniCard</span>
+            <span className="Ceni">Cenicard</span>
             <span className="Carne">CARNÉ DIGITAL</span>
         </div>
       </div>

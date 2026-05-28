@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 import { formatearNombreCompleto } from './utils'
 
 export async function getNoticias() {
@@ -11,7 +12,7 @@ export async function getNoticias() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo noticias:', error)
+    logError(error, 'noticiaService.getNoticias')
     return []
   }
   
@@ -29,7 +30,7 @@ export async function getNoticiasPublicadas() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo noticias publicadas:', error)
+    logError(error, 'noticiaService.getNoticiasPublicadas')
     return []
   }
   return data
@@ -46,7 +47,7 @@ export async function getNoticiaById(id) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo noticia:', error)
+    logError(error, 'noticiaService.getNoticiaById')
     return null
   }
   
@@ -74,7 +75,7 @@ export async function createNoticia(noticia) {
     .select()
 
   if (error) {
-    console.error('Error creando noticia:', error)
+    logError(error, 'noticiaService.createNoticia')
     throw error
   }
   return data[0]
@@ -97,7 +98,7 @@ export async function updateNoticia(id, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando noticia:', error)
+    logError(error, 'noticiaService.updateNoticia')
     throw error
   }
   return data[0]
@@ -110,7 +111,7 @@ export async function deleteNoticia(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando noticia:', error)
+    logError(error, 'noticiaService.deleteNoticia')
     throw error
   }
 }

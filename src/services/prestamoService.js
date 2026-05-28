@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 import { formatearNombreCompleto } from './utils'
 import { createNotificacion } from './notificacionService'
 
@@ -10,7 +11,7 @@ async function notificarAdmins(tipo, titulo, descripcion) {
       p_descripcion: descripcion || null
     })
   } catch (e) {
-    console.error('Error notificando a administradores:', e)
+    logError(e, 'prestamoService.notificarAdmins')
   }
 }
 
@@ -30,7 +31,7 @@ export async function getPrestamos() {
     .order('fecha_solicitud', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo préstamos:', error)
+    logError(error, 'prestamoService.getPrestamos')
     return []
   }
   
@@ -56,11 +57,10 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
       .single()
 
     if (getError) {
-      console.error('Error obteniendo préstamo:', getError)
+      logError(getError, 'prestamoService.aprobarPrestamo')
       throw getError
     }
 
-    // Obtener estado actual del carné
     const { data: usuario } = await supabase
       .from('usuarios')
       .select('estado_carne')
@@ -69,7 +69,6 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
 
     const estadoActual = usuario?.estado_carne || 'activo'
 
-    // Validación de estado del carné antes de aceptar
     if (estadoActual === 'vencido') {
       throw new Error('No se puede aceptar: el carné del usuario está vencido. Debe renovarlo primero.')
     }
@@ -80,7 +79,6 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
       throw new Error('No se puede aceptar: el usuario ya tiene un préstamo activo.')
     }
 
-    // Actualizar préstamo — el trigger cambiará estado_carne a 'bloqueado'
     const { error: updateError } = await supabase
       .from('prestamos')
       .update({
@@ -90,7 +88,7 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
       .eq('id', id)
 
     if (updateError) {
-      console.error('Error actualizando préstamo:', updateError)
+      logError(updateError, 'prestamoService.aprobarPrestamo')
       throw updateError
     }
 
@@ -102,13 +100,13 @@ export async function aprobarPrestamo(id, gestionado_por_id) {
         descripcion: 'Tu solicitud de préstamo ha sido aprobada'
       })
     } catch (e) {
-      console.error('Error notificando al usuario:', e)
+      logError(e, 'prestamoService.aprobarPrestamo')
     }
 
     return { success: true, message: 'Préstamo aprobado correctamente' }
 
   } catch (error) {
-    console.error('Error aprobando préstamo:', error)
+    logError(error, 'prestamoService.aprobarPrestamo')
     throw error
   }
 }
@@ -122,7 +120,7 @@ export async function rechazarPrestamo(id, motivo_rechazo, gestionado_por_id) {
       .single()
     
     if (getError) {
-      console.error('Error obteniendo préstamo:', getError)
+      logError(getError, 'prestamoService.rechazarPrestamo')
       throw getError
     }
 
@@ -136,7 +134,7 @@ export async function rechazarPrestamo(id, motivo_rechazo, gestionado_por_id) {
       .eq('id', id)
     
     if (updateError) {
-      console.error('Error actualizando préstamo:', updateError)
+      logError(updateError, 'prestamoService.rechazarPrestamo')
       throw updateError
     }
 
@@ -148,13 +146,13 @@ export async function rechazarPrestamo(id, motivo_rechazo, gestionado_por_id) {
         descripcion: motivo_rechazo || 'Tu solicitud de préstamo ha sido rechazada'
       })
     } catch (e) {
-      console.error('Error notificando al usuario:', e)
+      logError(e, 'prestamoService.rechazarPrestamo')
     }
     
     return { success: true, message: 'Préstamo rechazado correctamente' }
     
   } catch (error) {
-    console.error('Error rechazando préstamo:', error)
+    logError(error, 'prestamoService.rechazarPrestamo')
     throw error
   }
 }
@@ -169,7 +167,6 @@ export async function devolverEquipo(id, gestionado_por_id) {
 
     if (getError) throw getError
 
-    // El trigger cambiará estado_carne a 'activo' y liberará el equipo
     const { error: updateError } = await supabase
       .from('prestamos')
       .update({
@@ -188,20 +185,19 @@ export async function devolverEquipo(id, gestionado_por_id) {
         descripcion: 'El equipo prestado ha sido devuelto correctamente'
       })
     } catch (e) {
-      console.error('Error notificando al usuario:', e)
+      logError(e, 'prestamoService.devolverEquipo')
     }
 
     return { success: true }
 
   } catch (error) {
-    console.error('Error devolviendo equipo:', error)
+    logError(error, 'prestamoService.devolverEquipo')
     throw error
   }
 }
 
 export async function crearSolicitudPrestamo(usuarioId, equipoId, fechaDevolucionEsperada = null, observaciones = null) {
   try {
-    // Verificar estado del carné del usuario (validación UI)
     const { data: usuario } = await supabase
       .from('usuarios')
       .select('estado_carne')
@@ -220,8 +216,6 @@ export async function crearSolicitudPrestamo(usuarioId, equipoId, fechaDevolucio
       throw new Error('No puedes solicitar préstamos: ya tienes un préstamo activo.')
     }
 
-    // El trigger trg_validar_solicitud_prestamo valida el equipo
-    // y lo marca como 'ocupado' automáticamente
     const { data, error } = await supabase
       .from('prestamos')
       .insert([{
@@ -261,12 +255,12 @@ export async function crearSolicitudPrestamo(usuarioId, equipoId, fechaDevolucio
         descripcion: 'Tu solicitud de préstamo está pendiente de aprobación'
       })
     } catch (e) {
-      console.error('Error notificando al usuario:', e)
+      logError(e, 'prestamoService.crearSolicitudPrestamo')
     }
 
     return prestamo
   } catch (error) {
-    console.error('Error creando solicitud de préstamo:', error)
+    logError(error, 'prestamoService.crearSolicitudPrestamo')
     throw error
   }
 }
@@ -285,7 +279,7 @@ export async function getSolicitudesPorUsuario(usuarioId) {
     .order('fecha_solicitud', { ascending: false })
 
   if (error) {
-    console.error('Error obteniendo solicitudes del usuario:', error)
+    logError(error, 'prestamoService.getSolicitudesPorUsuario')
     return []
   }
   

@@ -1,4 +1,5 @@
 import { supabase } from '../supabaseClient'
+import { logError } from './errorService'
 
 export async function getFichas() {
   const { data, error } = await supabase
@@ -7,7 +8,7 @@ export async function getFichas() {
     .order('codigo_ficha', { ascending: true })
 
   if (error) {
-    console.error('Error obteniendo fichas:', error)
+    logError(error, 'fichaService.getFichas')
     return []
   }
   return data
@@ -21,7 +22,7 @@ export async function getFichasActivas() {
     .order('codigo_ficha', { ascending: true })
 
   if (error) {
-    console.error('Error obteniendo fichas activas:', error)
+    logError(error, 'fichaService.getFichasActivas')
     return []
   }
   return data
@@ -35,7 +36,7 @@ export async function getFichaById(id) {
     .single()
 
   if (error) {
-    console.error('Error obteniendo ficha:', error)
+    logError(error, 'fichaService.getFichaById')
     return null
   }
   return data
@@ -57,7 +58,7 @@ export async function createFicha(ficha) {
     .select()
 
   if (error) {
-    console.error('Error creando ficha:', error)
+    logError(error, 'fichaService.createFicha')
     throw error
   }
   return data[0]
@@ -80,7 +81,7 @@ export async function updateFicha(id, updates) {
     .select()
 
   if (error) {
-    console.error('Error actualizando ficha:', error)
+    logError(error, 'fichaService.updateFicha')
     throw error
   }
   return data[0]
@@ -103,7 +104,7 @@ export async function deleteFicha(id) {
     .eq('id', id)
 
   if (error) {
-    console.error('Error eliminando ficha:', error)
+    logError(error, 'fichaService.deleteFicha')
     throw error
   }
 }

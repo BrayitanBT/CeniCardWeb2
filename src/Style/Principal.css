@@ -163,6 +163,13 @@
   width: 100%;
 }
 
+.Area_Grafico_Loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
 .Area_Grafico img {
   width: 100%;
   max-width: 900px;
