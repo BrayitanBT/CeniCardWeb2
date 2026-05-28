@@ -352,4 +352,89 @@
   .Btn_Logout {
     font-size: 1rem;
   }
+
+  .Dropdown_Notificaciones {
+    position: fixed;
+    top: 64px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 32px);
+    max-width: 380px;
+    max-height: 70vh;
+  }
+
+  .Dropdown_Lista {
+    max-height: calc(70vh - 56px);
+  }
+
+  .Dropdown_Header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .Dropdown_Item {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .Item_Icono {
+    font-size: 1rem;
+  }
+
+  .Item_Titulo {
+    font-size: var(--font-size-xs);
+  }
+
+  .Item_Descripcion {
+    font-size: 11px;
+  }
+
+  .Item_Tiempo {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .Dropdown_Notificaciones {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100vw - 16px);
+    max-width: 380px;
+    max-height: 65vh;
+  }
+
+  .Dropdown_Lista {
+    max-height: calc(65vh - 52px);
+  }
+
+  .Dropdown_Header {
+    padding: var(--space-1) var(--space-2);
+  }
+
+  .Dropdown_Item {
+    padding: var(--space-1) var(--space-2);
+    gap: var(--space-1);
+  }
+
+  .Dropdown_Titulo {
+    font-size: var(--font-size-xs);
+  }
+
+  .Dropdown_MarcarLeidas {
+    font-size: 10px;
+    padding: 2px 6px;
+  }
+
+  .Item_Titulo {
+    font-size: 11px;
+  }
+
+  .Item_Descripcion {
+    font-size: 10px;
+  }
+
+  .Item_Tiempo {
+    font-size: 9px;
+  }
 }
